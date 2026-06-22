@@ -1,7 +1,6 @@
 # Web Bán Giày Dép / Quần Áo — Đồ án Lập trình Web
 
 Website thương mại điện tử đơn giản (Java JSP/Servlet + MySQL + Bootstrap), theo mô hình **MVC**.
-Đây là **bộ khung (base)**: cấu trúc thư mục đầy đủ, chạy được ngay, phần nghiệp vụ để nhóm tự code tiếp.
 
 ## 🛠 Công nghệ
 | Thành phần | Công nghệ |
