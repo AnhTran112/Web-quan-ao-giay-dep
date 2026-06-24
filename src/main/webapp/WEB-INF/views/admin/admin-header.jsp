@@ -16,6 +16,7 @@
         <div>
             <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/dashboard">Thống kê</a>
             <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/products">Sản phẩm</a>
+            <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/categories">Danh mục</a>
             <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a>
             <a class="btn btn-sm btn-outline-warning" href="${pageContext.request.contextPath}/admin/logout">Đăng xuất</a>
         </div>

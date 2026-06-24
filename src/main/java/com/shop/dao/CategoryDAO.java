@@ -28,4 +28,33 @@ public class CategoryDAO {
         }
         return list;
     }
+
+    // =====================================================
+    // TODO (Nguoi 4 - Nguyen): hoan thien quan ly danh muc
+    // =====================================================
+
+    /** Lay 1 danh muc theo id (dung khi sua). */
+    public Category getById(int id) {
+        // TODO: SELECT * FROM categories WHERE id = ?  -> tra ve Category hoac null
+        return null;
+    }
+
+    /** Them danh muc moi. */
+    public boolean insert(Category c) {
+        // TODO: INSERT INTO categories(name, description) VALUES (?, ?)
+        return false;
+    }
+
+    /** Cap nhat danh muc. */
+    public boolean update(Category c) {
+        // TODO: UPDATE categories SET name=?, description=? WHERE id=?
+        return false;
+    }
+
+    /** Xoa danh muc theo id. */
+    public boolean delete(int id) {
+        // TODO: DELETE FROM categories WHERE id=?
+        // Luu y: san pham dang tham chieu category_id -> can xu ly rang buoc khoa ngoai.
+        return false;
+    }
 }

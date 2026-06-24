@@ -7,7 +7,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 
-/** Quan ly don hang (admin). URL: "/admin/orders" */
+/**
+ * Quan ly don hang (admin). URL: "/admin/orders"
+ *
+ * NGUOI PHU TRACH: Nguoi 3 (Khoa).
+ * doGet da goi orderDAO.getAll() (chay duoc khi Khoa hoan thien OrderDAO).
+ * TODO: doPost doi trang thai don -> "Da giao".
+ */
 @WebServlet("/admin/orders")
 public class AdminOrderServlet extends HttpServlet {
 
@@ -23,6 +29,7 @@ public class AdminOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        // TODO (Khoa): int id = ...; orderDAO.updateStatus(id, "DELIVERED");
         resp.sendRedirect(req.getContextPath() + "/admin/orders");
     }
 }
