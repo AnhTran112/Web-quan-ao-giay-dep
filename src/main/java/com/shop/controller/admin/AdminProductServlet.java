@@ -11,6 +11,9 @@ import java.io.IOException;
 /**
  * Quan ly san pham (admin). URL: "/admin/products"
  * action = list | new | edit | delete
+ *
+ * NGUOI PHU TRACH: Nguoi 1 (Hoang).
+ * Hien tai: list + form (them moi) da chay. Con TODO: load san pham khi edit, luu, xoa.
  */
 @WebServlet("/admin/products")
 public class AdminProductServlet extends HttpServlet {
@@ -27,10 +30,13 @@ public class AdminProductServlet extends HttpServlet {
         switch (action) {
             case "new":
             case "edit":
+                // TODO (Hoang): neu la edit -> doc id, productDAO.getById(id),
+                //   req.setAttribute("product", p) de form hien du lieu cu.
                 req.setAttribute("categories", categoryDAO.getAll());
                 req.getRequestDispatcher("/WEB-INF/views/admin/product-form.jsp").forward(req, resp);
                 break;
             case "delete":
+                // TODO (Hoang): int id = ...; productDAO.delete(id);
                 resp.sendRedirect(req.getContextPath() + "/admin/products");
                 break;
             default:
@@ -42,6 +48,9 @@ public class AdminProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        // TODO (Hoang): doc form (id, name, categoryId, price, quantity, image, description);
+        //   id rong -> productDAO.insert(p); nguoc lai -> productDAO.update(p).
+        //   (Nang cap) upload anh bang @MultipartConfig + Part.
         resp.sendRedirect(req.getContextPath() + "/admin/products");
     }
 }

@@ -62,14 +62,21 @@ public class ProductDAO {
         return list;
     }
 
+    // =====================================================
+    // TODO (Nguoi 1 - Hoang): hoan thien CRUD san pham
+    // =====================================================
+
+    /** TODO: INSERT INTO products(category_id,name,description,price,image,quantity) VALUES (...). */
     public boolean insert(Product p) {
         return false;
     }
 
+    /** TODO: UPDATE products SET ... WHERE id=?. */
     public boolean update(Product p) {
         return false;
     }
 
+    /** TODO: DELETE FROM products WHERE id=?. */
     public boolean delete(int id) {
         return false;
     }
