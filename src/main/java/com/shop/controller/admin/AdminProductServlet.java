@@ -2,18 +2,19 @@ package com.shop.controller.admin;
 
 import com.shop.dao.CategoryDAO;
 import com.shop.dao.ProductDAO;
+import com.shop.model.Product;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * Quan ly san pham (admin). URL: "/admin/products"
  * action = list | new | edit | delete
  *
  * NGUOI PHU TRACH: Nguoi 1 (Hoang).
- * Hien tai: list + form (them moi) da chay. Con TODO: load san pham khi edit, luu, xoa.
  */
 @WebServlet("/admin/products")
 public class AdminProductServlet extends HttpServlet {
@@ -29,14 +30,20 @@ public class AdminProductServlet extends HttpServlet {
 
         switch (action) {
             case "new":
+                // Them moi: chi can danh sach danh muc cho o select, khong co san pham cu
+                req.setAttribute("categories", categoryDAO.getAll());
+                req.getRequestDispatcher("/WEB-INF/views/admin/product-form.jsp").forward(req, resp);
+                break;
             case "edit":
-                // TODO (Hoang): neu la edit -> doc id, productDAO.getById(id),
-                //   req.setAttribute("product", p) de form hien du lieu cu.
+                // Sua: doc id tren URL, lay san pham cu de form hien du lieu
+                int editId = Integer.parseInt(req.getParameter("id"));
+                req.setAttribute("product", productDAO.getById(editId));
                 req.setAttribute("categories", categoryDAO.getAll());
                 req.getRequestDispatcher("/WEB-INF/views/admin/product-form.jsp").forward(req, resp);
                 break;
             case "delete":
-                // TODO (Hoang): int id = ...; productDAO.delete(id);
+                int deleteId = Integer.parseInt(req.getParameter("id"));
+                productDAO.delete(deleteId);
                 resp.sendRedirect(req.getContextPath() + "/admin/products");
                 break;
             default:
@@ -48,9 +55,32 @@ public class AdminProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // TODO (Hoang): doc form (id, name, categoryId, price, quantity, image, description);
-        //   id rong -> productDAO.insert(p); nguoc lai -> productDAO.update(p).
-        //   (Nang cap) upload anh bang @MultipartConfig + Part.
+        // Doc du lieu tu form
+        String idParam = req.getParameter("id");
+        String name = req.getParameter("name");
+        int categoryId = Integer.parseInt(req.getParameter("categoryId"));
+        BigDecimal price = new BigDecimal(req.getParameter("price"));
+        int quantity = Integer.parseInt(req.getParameter("quantity"));
+        String image = req.getParameter("image");
+        String description = req.getParameter("description");
+
+        // Dong goi vao object Product
+        Product p = new Product();
+        p.setName(name);
+        p.setCategoryId(categoryId);
+        p.setPrice(price);
+        p.setQuantity(quantity);
+        p.setImage(image);
+        p.setDescription(description);
+
+        // id rong -> them moi; co id -> cap nhat
+        if (idParam == null || idParam.isEmpty()) {
+            productDAO.insert(p);
+        } else {
+            p.setId(Integer.parseInt(idParam));
+            productDAO.update(p);
+        }
+
         resp.sendRedirect(req.getContextPath() + "/admin/products");
     }
 }
