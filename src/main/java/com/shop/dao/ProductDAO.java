@@ -33,7 +33,8 @@ public class ProductDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return mapRow(rs);
+                if (rs.next()) 
+                    return mapRow(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -46,9 +47,18 @@ public class ProductDAO {
         List<Product> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
         List<Object> params = new ArrayList<>();
-        if (categoryId != null) { sql.append(" AND category_id = ?"); params.add(categoryId); }
-        if (minPrice != null)   { sql.append(" AND price >= ?");      params.add(minPrice); }
-        if (maxPrice != null)   { sql.append(" AND price <= ?");      params.add(maxPrice); }
+        if (categoryId != null){
+            sql.append(" AND category_id = ?");
+            params.add(categoryId);
+        }
+        if (minPrice != null){
+            sql.append(" AND price >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice != null){
+            sql.append(" AND price <= ?");
+            params.add(maxPrice);
+        }
         sql.append(" ORDER BY id DESC");
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -66,19 +76,56 @@ public class ProductDAO {
     // TODO (Nguoi 1 - Hoang): hoan thien CRUD san pham
     // =====================================================
 
-    /** TODO: INSERT INTO products(category_id,name,description,price,image,quantity) VALUES (...). */
+    /** Them moi 1 san pham vao bang products. Tra ve true neu them thanh cong. */
     public boolean insert(Product p) {
-        return false;
+        String sql = "INSERT INTO products(category_id, name, description, price, image, quantity) "
+                   + "VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, p.getCategoryId());
+            ps.setString(2, p.getName());
+            ps.setString(3, p.getDescription());
+            ps.setBigDecimal(4, p.getPrice());
+            ps.setString(5, p.getImage());
+            ps.setInt(6, p.getQuantity());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    /** TODO: UPDATE products SET ... WHERE id=?. */
+    /** Cap nhat 1 san pham da co theo id. Tra ve true neu sua thanh cong. */
     public boolean update(Product p) {
-        return false;
+        String sql = "UPDATE products SET category_id = ?, name = ?, description = ?, "
+                   + "price = ?, image = ?, quantity = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, p.getCategoryId());
+            ps.setString(2, p.getName());
+            ps.setString(3, p.getDescription());
+            ps.setBigDecimal(4, p.getPrice());
+            ps.setString(5, p.getImage());
+            ps.setInt(6, p.getQuantity());
+            ps.setInt(7, p.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    /** TODO: DELETE FROM products WHERE id=?. */
+    /** Xoa 1 san pham theo id. Tra ve true neu xoa thanh cong. */
     public boolean delete(int id) {
-        return false;
+        String sql = "DELETE FROM products WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /** Chuyen 1 dong ResultSet thanh object Product. */
