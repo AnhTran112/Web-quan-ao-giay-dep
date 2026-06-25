@@ -1,10 +1,14 @@
 <%@ include file="admin-header.jsp" %>
 
 <%-- Dung chung cho them moi va sua. Neu co "product" thi la sua. --%>
-<h3 class="mb-3">${empty product ? 'Thêm sản phẩm' : 'Sửa sản phẩm'}</h3>
+<h3 class="mb-3">${empty product or product.id == 0 ? 'Thêm sản phẩm' : 'Sửa sản phẩm'}</h3>
+
+<c:if test="${not empty error}">
+    <div class="alert alert-danger" style="max-width: 600px;">${error}</div>
+</c:if>
 
 <form action="${pageContext.request.contextPath}/admin/products" method="post" style="max-width: 600px;">
-    <input type="hidden" name="id" value="${product.id}">
+    <input type="hidden" name="id" value="${product.id > 0 ? product.id : ''}">
 
     <div class="mb-3">
         <label class="form-label">Tên sản phẩm</label>
