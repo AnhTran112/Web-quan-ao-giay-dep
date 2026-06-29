@@ -22,12 +22,7 @@
                                 <li class="nav-item"><a class="nav-link"
                                         href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
                             </ul>
-                            <c:set var="cartCount" value="0" />
-                            <c:if test="${not empty sessionScope.cart}">
-                                <c:forEach var="item" items="${sessionScope.cart}">
-                                    <c:set var="cartCount" value="${cartCount + item.quantity}" />
-                                </c:forEach>
-                            </c:if>
+                            <c:set var="cartCount" value="${requestScope.cartCount != null ? requestScope.cartCount : 0}" />
                             <a href="${pageContext.request.contextPath}/cart"
                                 class="btn btn-outline-light position-relative">
                                 🛒 Giỏ hàng

@@ -3,6 +3,7 @@ package com.shop.controller;
 import com.shop.dao.ProductDAO;
 import com.shop.model.CartItem;
 import com.shop.model.Product;
+import com.shop.util.CartUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,9 +11,10 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Quan ly gio hang bang Session. URL: "/cart"
+ * Quan ly gio hang bang Cookie. URL: "/cart"
  */
 @WebServlet("/cart")
 public class CartServlet extends HttpServlet {
@@ -24,11 +26,32 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = req.getParameter("action");
         if ("remove".equals(action)) {
-            handleRemove(req);
+            handleRemove(req, resp);
             resp.sendRedirect(req.getContextPath() + "/cart");
             return;
         }
 
+        // Fetch products and prepare cartList for the view
+        Map<Integer, Integer> cartMap = CartUtil.getCartMap(req.getCookies());
+        List<CartItem> cartList = new ArrayList<>();
+        
+        for (Map.Entry<Integer, Integer> entry : cartMap.entrySet()) {
+            int productId = entry.getKey();
+            int quantity = entry.getValue();
+            
+            Product product = productDAO.getById(productId);
+            if (product != null) {
+                cartList.add(new CartItem(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImage(),
+                        quantity
+                ));
+            }
+        }
+        
+        req.setAttribute("cartList", cartList);
         req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
     }
 
@@ -38,75 +61,50 @@ public class CartServlet extends HttpServlet {
         String action = req.getParameter("action");
         
         if ("add".equals(action)) {
-            handleAdd(req);
+            handleAdd(req, resp);
         } else if ("update".equals(action)) {
-            handleUpdate(req);
+            handleUpdate(req, resp);
         } else if ("remove".equals(action)) {
-            handleRemove(req);
+            handleRemove(req, resp);
         }
 
         resp.sendRedirect(req.getContextPath() + "/cart");
     }
 
-    private void handleAdd(HttpServletRequest req) {
+    private void handleAdd(HttpServletRequest req, HttpServletResponse resp) {
         int productId = Integer.parseInt(req.getParameter("productId"));
         int quantity = Integer.parseInt(req.getParameter("quantity"));
 
-        HttpSession session = req.getSession();
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ArrayList<>();
-            session.setAttribute("cart", cart);
-        }
-
-        // Check if item already exists
-        for (CartItem item : cart) {
-            if (item.getProductId() == productId) {
-                item.setQuantity(item.getQuantity() + quantity);
-                return;
-            }
-        }
-
-        // Fetch product and add as new CartItem
-        Product product = productDAO.getById(productId);
-        if (product != null) {
-            cart.add(new CartItem(
-                product.getId(),
-                product.getName(),
-                product.getPrice(),
-                product.getImage(),
-                quantity
-            ));
-        }
+        Map<Integer, Integer> cartMap = CartUtil.getCartMap(req.getCookies());
+        
+        // Update quantity if exists, else add new
+        int currentQty = cartMap.getOrDefault(productId, 0);
+        cartMap.put(productId, currentQty + quantity);
+        
+        CartUtil.saveCartCookie(cartMap, resp);
     }
 
-    private void handleUpdate(HttpServletRequest req) {
+    private void handleUpdate(HttpServletRequest req, HttpServletResponse resp) {
         int productId = Integer.parseInt(req.getParameter("productId"));
         int quantity = Integer.parseInt(req.getParameter("quantity"));
 
-        HttpSession session = req.getSession();
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        if (cart != null) {
-            for (CartItem item : cart) {
-                if (item.getProductId() == productId) {
-                    if (quantity > 0) {
-                        item.setQuantity(quantity);
-                    } else {
-                        cart.remove(item);
-                    }
-                    break;
-                }
-            }
+        Map<Integer, Integer> cartMap = CartUtil.getCartMap(req.getCookies());
+        
+        if (quantity > 0) {
+            cartMap.put(productId, quantity);
+        } else {
+            cartMap.remove(productId);
         }
+        
+        CartUtil.saveCartCookie(cartMap, resp);
     }
 
-    private void handleRemove(HttpServletRequest req) {
+    private void handleRemove(HttpServletRequest req, HttpServletResponse resp) {
         int productId = Integer.parseInt(req.getParameter("productId"));
 
-        HttpSession session = req.getSession();
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        if (cart != null) {
-            cart.removeIf(item -> item.getProductId() == productId);
-        }
+        Map<Integer, Integer> cartMap = CartUtil.getCartMap(req.getCookies());
+        cartMap.remove(productId);
+        
+        CartUtil.saveCartCookie(cartMap, resp);
     }
 }

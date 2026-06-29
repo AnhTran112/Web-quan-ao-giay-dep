@@ -97,25 +97,25 @@ Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và
 - `model/CartItem.java`
 
 **Phải hoàn thiện (đang để trống):**
-- `controller/CartServlet.java` — quản lý giỏ trong `session.getAttribute("cart")`:
-  - `action=add` → đọc `productId`, `quantity`; nếu đã có thì cộng dồn, chưa có thì thêm `CartItem`
+- `controller/CartServlet.java` — quản lý giỏ trong `Cookie (shop_cart)`:
+  - `action=add` → đọc `productId`, `quantity`; cập nhật Map, lưu lại Cookie
   - `action=update` → đổi số lượng 1 dòng
   - `action=remove` → xóa 1 dòng theo `productId`
-  - lưu lại `List<CartItem>` vào session, rồi forward/redirect về `cart.jsp`
+  - Đọc Cookie, truy xuất DB lấy thông tin, set vào `requestScope.cartList` rồi forward/redirect về `cart.jsp`
 - `views/cart.jsp` — nối nút Xóa / cập nhật số lượng, tính tổng tiền
 
 ### 3.3. Nâng cấp ăn điểm
 - **Cập nhật số lượng ngay trong giỏ** (ô number + nút Cập nhật).
-- **Badge đếm số món** trên navbar (đọc `sessionScope.cart` hiển thị số lượng).
+- **Badge đếm số món** trên navbar (sử dụng `CartFilter` đọc Cookie để hiển thị số lượng thông qua `requestScope.cartCount`).
 - **Phân trang** danh sách sản phẩm trang chủ (vd 6 sản phẩm/trang) + `ProductDAO.getPage(offset, limit)`.
 
 ### 3.4. Docs phụ trách
 - `docs/01_mo_ta_de_tai.md` (mục chức năng khách hàng)
-- Tài liệu mô tả giỏ hàng (cơ chế Session)
+- Tài liệu mô tả giỏ hàng (cơ chế Cookie)
 
 ### 3.5. Thuyết trình
 - Trải nghiệm khách, lọc danh mục/khoảng giá
-- Cơ chế giỏ hàng bằng Session (vì sao không cần bảng DB)
+- Cơ chế giỏ hàng bằng Cookie (vì sao không cần bảng DB, tối ưu hơn Session)
 
 ### 3.6. Checklist
 - [ ] Thêm vào giỏ từ trang chi tiết OK

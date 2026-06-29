@@ -8,7 +8,7 @@
         <h2 class="mb-4">Giỏ hàng của bạn</h2>
         
         <c:choose>
-            <c:when test="${empty sessionScope.cart}">
+            <c:when test="${empty requestScope.cartList}">
                 <div class="alert alert-info">Giỏ hàng đang trống. <a href="${pageContext.request.contextPath}/home">Tiếp tục mua sắm</a></div>
             </c:when>
             <c:otherwise>
@@ -26,7 +26,7 @@
                         </thead>
                         <tbody>
                             <c:set var="totalPrice" value="0" />
-                            <c:forEach var="item" items="${sessionScope.cart}">
+                            <c:forEach var="item" items="${requestScope.cartList}">
                                 <tr>
                                     <td>
                                         <img src="${pageContext.request.contextPath}/assets/images/${item.image}"
