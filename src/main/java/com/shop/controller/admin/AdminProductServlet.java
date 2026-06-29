@@ -5,10 +5,13 @@ import com.shop.dao.ProductDAO;
 import com.shop.model.Product;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Quan ly san pham (admin). URL: "/admin/products"
@@ -17,6 +20,11 @@ import java.math.BigDecimal;
  * NGUOI PHU TRACH: Nguoi 1 (Hoang).
  */
 @WebServlet("/admin/products")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024,      // 1 MB: duoi nguong nay giu trong RAM, tren moi ghi ra disk tam
+    maxFileSize       = 5 * 1024 * 1024,  // 5 MB: gioi han moi file anh
+    maxRequestSize    = 10 * 1024 * 1024  // 10 MB: gioi han toan bo request (anh + cac truong khac)
+)
 public class AdminProductServlet extends HttpServlet {
 
     private final ProductDAO productDAO = new ProductDAO();
@@ -43,11 +51,23 @@ public class AdminProductServlet extends HttpServlet {
                 break;
             case "delete":
                 int deleteId = Integer.parseInt(req.getParameter("id"));
+                // Lay san pham truoc khi xoa de biet ten file anh -> xoa luon file anh khoi o dia
+                Product deleting = productDAO.getById(deleteId);
                 productDAO.delete(deleteId);
+                if (deleting != null) deleteImageFile(deleting.getImage());
                 resp.sendRedirect(req.getContextPath() + "/admin/products");
                 break;
             default:
-                req.setAttribute("products", productDAO.getAll());
+                // Tim kiem theo ten neu co tham so keyword
+                String keyword = req.getParameter("keyword");
+                List<Product> products;
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    products = productDAO.search(keyword.trim());
+                    req.setAttribute("keyword", keyword); // giu lai gia tri trong o search
+                } else {
+                    products = productDAO.getAll();
+                }
+                req.setAttribute("products", products);
                 req.getRequestDispatcher("/WEB-INF/views/admin/product-list.jsp").forward(req, resp);
         }
     }
@@ -61,8 +81,38 @@ public class AdminProductServlet extends HttpServlet {
         String categoryIdParam = req.getParameter("categoryId");
         String priceParam = req.getParameter("price");
         String quantityParam = req.getParameter("quantity");
-        String image = req.getParameter("image");
         String description = req.getParameter("description");
+
+        // Giu ten anh cu (hidden field). Se bi ghi de neu admin chon file moi.
+        String oldImage = req.getParameter("image");
+        String image = oldImage;
+
+        // ===== XU LY UPLOAD ANH =====
+        // Part "imageFile" chi ton tai neu form dung enctype="multipart/form-data"
+        // va @MultipartConfig da duoc khai bao tren class nay.
+        try {
+            Part imagePart = req.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                // Lay phan mo rong (.jpg, .png...) tu ten file goc de giu dung dinh dang.
+                // Neu ten file khong co dau cham thi mac dinh .jpg de tranh loi cat chuoi.
+                String originalName = imagePart.getSubmittedFileName();
+                String ext = ".jpg";
+                if (originalName != null && originalName.contains(".")) {
+                    ext = originalName.substring(originalName.lastIndexOf('.'));
+                }
+
+                // Dung timestamp lam ten file de tranh trung ten khi nhieu san pham co anh giong nhau
+                String fileName = System.currentTimeMillis() + ext;
+
+                // getRealPath tra ve duong dan that tren dia cua thu muc da deploy
+                String uploadDir = getServletContext().getRealPath("/assets/images/");
+                new File(uploadDir).mkdirs(); // tao thu muc neu chua co
+                imagePart.write(uploadDir + File.separator + fileName);
+                image = fileName;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // ===== VALIDATE PHIA SERVER =====
         String error = null;
@@ -74,8 +124,8 @@ public class AdminProductServlet extends HttpServlet {
             error = "Tên sản phẩm không được để trống.";
         } else {
             try {
-                price = new BigDecimal(priceParam);
-                quantity = Integer.parseInt(quantityParam);
+                price      = new BigDecimal(priceParam);
+                quantity   = Integer.parseInt(quantityParam);
                 categoryId = Integer.parseInt(categoryIdParam);
                 if (price.signum() < 0) error = "Giá phải lớn hơn hoặc bằng 0.";
                 else if (quantity < 0)  error = "Số lượng phải lớn hơn hoặc bằng 0.";
@@ -108,8 +158,24 @@ public class AdminProductServlet extends HttpServlet {
             productDAO.insert(p);
         } else {
             productDAO.update(p);
+            // Neu admin chon anh moi (ten file thay doi) thi xoa anh cu cho do rac
+            if (oldImage != null && !oldImage.isEmpty() && !oldImage.equals(image)) {
+                deleteImageFile(oldImage);
+            }
         }
 
         resp.sendRedirect(req.getContextPath() + "/admin/products");
+    }
+
+    /**
+     * Xoa 1 file anh trong thu muc assets/images cua ung dung da deploy.
+     * Goi khi admin doi sang anh moi (xoa anh cu) hoac xoa han san pham,
+     * de tranh tich tu cac file anh khong con duoc dung den.
+     */
+    private void deleteImageFile(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) return;
+        String uploadDir = getServletContext().getRealPath("/assets/images/");
+        File f = new File(uploadDir, fileName);
+        if (f.exists()) f.delete();
     }
 }

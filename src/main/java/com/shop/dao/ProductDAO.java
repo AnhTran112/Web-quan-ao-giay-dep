@@ -115,6 +115,22 @@ public class ProductDAO {
         }
     }
 
+    /** Tim kiem san pham theo ten (khong phan biet hoa thuong). Dung LIKE %keyword%. */
+    public List<Product> search(String keyword) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE name LIKE ? ORDER BY id DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + keyword + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     /** Xoa 1 san pham theo id. Tra ve true neu xoa thanh cong. */
     public boolean delete(int id) {
         String sql = "DELETE FROM products WHERE id = ?";
