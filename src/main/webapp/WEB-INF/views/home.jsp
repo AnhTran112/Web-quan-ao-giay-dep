@@ -56,6 +56,25 @@
                 <p class="text-muted">Không có sản phẩm nào.</p>
             </c:if>
         </div>
+        
+        <!-- Phan trang -->
+        <c:if test="${totalPages > 1}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <c:url var="pageUrl" value="/home">
+                            <c:param name="page" value="${i}" />
+                            <c:if test="${not empty param.categoryId}"><c:param name="categoryId" value="${param.categoryId}" /></c:if>
+                            <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}" /></c:if>
+                            <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}" /></c:if>
+                        </c:url>
+                        <li class="page-item ${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" href="${pageUrl}">${i}</a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </nav>
+        </c:if>
     </div>
 </div>
 
