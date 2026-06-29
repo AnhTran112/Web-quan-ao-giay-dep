@@ -15,11 +15,17 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/home">👟 ShoeShop</a>
-        <div class="collapse navbar-collapse">
+        <%-- Nut hamburger: hien tren man hinh nho de mo/dong menu --%>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNav" aria-controls="mainNav"
+                aria-expanded="false" aria-label="Mở menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
             </ul>
-            <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light">
+            <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light mt-2 mt-lg-0">
                 🛒 Giỏ hàng
             </a>
         </div>
