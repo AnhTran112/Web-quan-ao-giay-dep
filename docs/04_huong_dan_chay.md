@@ -44,6 +44,8 @@ mvn clean package cargo:run
 | Tải Tomcat chậm/lỗi mạng | Chạy lại lệnh, Maven sẽ tải tiếp |
 | `Communications link failure` (MySQL) | MySQL chưa bật, hoặc sai user/password trong `DBConnection.java` |
 | `Unknown database 'shop_db'` | Chưa chạy `database.sql` ở Bước 1 |
+| Ảnh upload xong nhưng không hiện | Thư mục `assets/images/` chưa có trong deploy — server tự tạo khi upload lần đầu; thử upload lại |
+| Ảnh mất sau khi chạy lại `mvn clean` | Bình thường — `clean` xóa `target/`. Ảnh lưu trong thư mục deploy, không phải source. Copy lại vào `src/main/webapp/assets/images/` để giữ vĩnh viễn |
 
 > **Ghi chú về ServBay:** ServBay hiện chưa hỗ trợ chạy JSP/Servlet trực tiếp (chưa có gói Tomcat).
 > Vì vậy ta để Maven tự lo phần Tomcat. ServBay vẫn dùng được cho **MySQL** và **JDK**.

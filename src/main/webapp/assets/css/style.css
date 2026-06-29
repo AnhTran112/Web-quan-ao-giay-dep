@@ -1,14 +1,185 @@
-/* CSS tuy chinh cho shop. Bootstrap lo phan chinh, day chi them mot it. */
+/* CSS tuy chinh cho shop. Bootstrap lo phan khung, day them cho dep va dong bo. */
 
 body {
-    background-color: #f8f9fa;
+    background-color: #f5f6f8;
+    color: #222;
+    overflow-x: hidden; /* chan tran ngang tren man hinh nho */
 }
 
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
+/* Anh khong bao gio vuot qua khung chua no */
+img {
+    max-width: 100%;
 }
 
 .navbar-brand {
     font-size: 1.4rem;
+}
+
+/* ============ BANNER TRANG CHU ============ */
+.hero-banner {
+    background: linear-gradient(120deg, #1f3a5f 0%, #2563eb 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+}
+.hero-banner h1 {
+    font-weight: 700;
+    font-size: 1.9rem;
+    margin-bottom: 8px;
+}
+.hero-banner p {
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+/* ============ THE (CARD) SAN PHAM ============ */
+.product-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+}
+.product-card .card-img-top {
+    height: 210px;
+    object-fit: cover;
+    background-color: #fff;
+}
+.product-card .card-title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    /* gioi han 2 dong cho ten dai, tranh vo khung card */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.6em;
+}
+.product-price {
+    color: #e53935;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* ============ O LOC BEN TRAI ============ */
+.filter-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* ============ TRANG CHI TIET SAN PHAM ============ */
+.detail-img {
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    object-fit: contain;
+    width: 100%;
+    max-height: 420px;
+}
+.detail-price-box {
+    background: #fff5f5;
+    border: 1px solid #ffd6d6;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+}
+.detail-price-box .price {
+    color: #e53935;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+.section-title {
+    border-left: 4px solid #2563eb;
+    padding-left: 10px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+.desc-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    line-height: 1.7;
+    white-space: pre-line; /* giu xuong dong trong mo ta */
+}
+.spec-table th {
+    width: 160px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+/* Hang sao danh gia + da ban (tinh trang gioi thieu) */
+.rating-row {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+.rating-row .stars { color: #fbbf24; letter-spacing: 1px; }
+
+/* Nut mua hang */
+.btn-buy-now {
+    background-color: #ff6633;
+    border-color: #ff6633;
+    color: #fff;
+}
+.btn-buy-now:hover {
+    background-color: #e8501c;
+    border-color: #e8501c;
+    color: #fff;
+}
+
+/* Dai cam ket dich vu (kieu Shopee) */
+.commit-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed #e5e7eb;
+    color: #4b5563;
+    font-size: 0.9rem;
+}
+.commit-strip span { white-space: nowrap; }
+
+/* Anh chinh trang chi tiet: khung vuong, nen trang, anh canh giua */
+.detail-img-wrap {
+    width: 100%;
+    max-width: 440px;       /* khong de anh qua to khi xep doc tren mobile/tablet */
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.detail-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ============ TINH CHINH CHO MAN HINH NHO (responsive) ============ */
+@media (max-width: 575.98px) {
+    .hero-banner {
+        padding: 24px 18px;
+    }
+    .hero-banner h1 {
+        font-size: 1.4rem;
+    }
+    .detail-price-box .price {
+        font-size: 1.5rem;
+    }
+    /* Tren dien thoai cho 2 nut mua hang chiem het chieu ngang cho de bam */
+    .btn-buy-now, .product-actions .btn {
+        flex: 1 1 auto;
+    }
 }
