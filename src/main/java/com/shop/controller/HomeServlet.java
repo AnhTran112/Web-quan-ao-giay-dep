@@ -30,16 +30,30 @@ public class HomeServlet extends HttpServlet {
         Long minPrice = parseLong(req.getParameter("minPrice"));
         Long maxPrice = parseLong(req.getParameter("maxPrice"));
 
-        List<Product> products;
-        if (categoryId == null && minPrice == null && maxPrice == null) {
-            products = productDAO.getAll();
-        } else {
-            products = productDAO.filter(categoryId, minPrice, maxPrice);
+        // Phan trang
+        int page = 1;
+        String pageStr = req.getParameter("page");
+        if (pageStr != null && !pageStr.isEmpty()) {
+            try {
+                page = Integer.parseInt(pageStr);
+                if (page < 1) page = 1;
+            } catch (NumberFormatException ignored) {}
         }
+        int limit = 6;
+        int offset = (page - 1) * limit;
+
+        // Lay du lieu
+        List<Product> products = productDAO.filterWithPage(categoryId, minPrice, maxPrice, offset, limit);
+        int totalRecords = productDAO.countFiltered(categoryId, minPrice, maxPrice);
+        int totalPages = (int) Math.ceil((double) totalRecords / limit);
+
         List<Category> categories = categoryDAO.getAll();
 
         req.setAttribute("products", products);
         req.setAttribute("categories", categories);
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", totalPages);
+        
         req.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(req, resp);
     }
 

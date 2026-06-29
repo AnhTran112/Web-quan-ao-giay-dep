@@ -72,6 +72,68 @@ public class ProductDAO {
         return list;
     }
 
+    /** Loc san pham co phan trang. */
+    public List<Product> filterWithPage(Integer categoryId, Long minPrice, Long maxPrice, int offset, int limit) {
+        List<Product> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (categoryId != null){
+            sql.append(" AND category_id = ?");
+            params.add(categoryId);
+        }
+        if (minPrice != null){
+            sql.append(" AND price >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice != null){
+            sql.append(" AND price <= ?");
+            params.add(maxPrice);
+        }
+        sql.append(" ORDER BY id DESC LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /** Dem tong so san pham thoa man dieu kien loc. */
+    public int countFiltered(Integer categoryId, Long minPrice, Long maxPrice) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM products WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (categoryId != null){
+            sql.append(" AND category_id = ?");
+            params.add(categoryId);
+        }
+        if (minPrice != null){
+            sql.append(" AND price >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice != null){
+            sql.append(" AND price <= ?");
+            params.add(maxPrice);
+        }
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     // =====================================================
     // TODO (Nguoi 1 - Hoang): hoan thien CRUD san pham
     // =====================================================
