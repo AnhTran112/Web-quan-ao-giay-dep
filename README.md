@@ -92,11 +92,20 @@ mvn clean package cargo:run
 
 ---
 
-## ✅ Trạng thái dự án
-Đây là **bộ khung (base)**:
-- **Chạy được ngay:** xem danh sách sản phẩm, lọc theo danh mục/giá, xem chi tiết, đăng nhập admin.
-- **Để hoàn thiện:** logic giỏ hàng, đặt hàng, thêm/sửa/xóa sản phẩm, thống kê doanh thu
-  (các phương thức trong `OrderDAO`, `CartServlet`, `CheckoutServlet`, `AdminProductServlet`... hiện đang để trống).
+## ✅ Tính năng đã hoàn thiện
+
+**Phía khách hàng:**
+- Xem danh sách sản phẩm, lọc theo danh mục và khoảng giá
+- Xem chi tiết sản phẩm
+- Giỏ hàng (Session): thêm, cập nhật số lượng, xóa
+- Đặt hàng (checkout): điền thông tin → lưu đơn vào DB → xóa giỏ
+
+**Phía quản trị (`/admin`):**
+- Đăng nhập bảo mật (Filter chặn toàn bộ `/admin/*`)
+- Quản lý sản phẩm: thêm/sửa/xóa, **upload ảnh**, **tìm kiếm theo tên**, validate phía server
+- Quản lý danh mục: thêm/sửa/xóa
+- Quản lý đơn hàng: xem danh sách, đổi trạng thái PENDING → DELIVERED
+- Thống kê doanh thu + số đơn
 
 ## 📚 Tài liệu
 - [`docs/01_mo_ta_de_tai.md`](docs/01_mo_ta_de_tai.md) — Mô tả đề tài, chức năng, công nghệ

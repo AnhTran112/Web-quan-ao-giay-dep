@@ -97,3 +97,23 @@ Trình duyệt  →  HomeServlet  →  ProductDAO.getAll()  →  MySQL
                     ↓
               home.jsp (Bootstrap)  →  HTML  →  Trình duyệt
 ```
+
+## Upload ảnh sản phẩm — cơ chế hoạt động
+
+Khi admin thêm/sửa sản phẩm kèm ảnh:
+
+```
+Form (enctype=multipart/form-data)
+    → AdminProductServlet (@MultipartConfig)
+        → req.getPart("imageFile")          ← đọc file binary
+        → Part.write(uploadDir + fileName)  ← lưu vào assets/images/
+        → lưu tên file (timestamp + .ext) vào cột image trong DB
+```
+
+Khi hiển thị ảnh:
+```
+JSP: <img src="/shop/assets/images/${p.image}">
+Tomcat phục vụ file tĩnh từ thư mục assets/images/ của ứng dụng đã deploy
+```
+
+> **Lưu ý:** Ảnh được lưu vào thư mục deploy (`target/cargo/...`). Nếu chạy `mvn clean`, thư mục `target` bị xóa và ảnh mất. Với đồ án demo, điều này chấp nhận được.
