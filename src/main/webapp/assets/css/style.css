@@ -4,6 +4,17 @@ body {
     background-color: #f5f6f8;
     color: #222;
     overflow-x: hidden; /* chan tran ngang tren man hinh nho */
+    /* Sticky footer: body cao it nhat bang man hinh, xep doc -> footer luon o duoi cung */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+/* Vung noi dung chinh gian ra day footer xuong duoi khi trang it noi dung */
+body > .container.my-4 {
+    flex: 1 0 auto;
+}
+footer {
+    flex-shrink: 0;
 }
 
 /* Anh khong bao gio vuot qua khung chua no */
