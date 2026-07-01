@@ -1,14 +1,16 @@
 <%@ include file="common/header.jsp" %>
+<fmt:setLocale value="vi_VN" />
 
 <%-- Chi tiet san pham. Du lieu: request attribute "product", "categoryName" --%>
 
-<!-- Breadcrumb dieu huong -->
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
-        <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/home">Sản phẩm</a></li>
-        <li class="breadcrumb-item active" aria-current="page">${product.name}</li>
-    </ol>
+<!-- Breadcrumb kieu Shopee: Trang chu > Danh muc > Ten san pham -->
+<nav aria-label="breadcrumb" class="shopee-crumb my-2">
+    <a href="${pageContext.request.contextPath}/home">Trang chủ</a>
+    <span class="crumb-sep">›</span>
+    <a href="${pageContext.request.contextPath}/home?categoryId=${product.categoryId}">
+        ${not empty categoryName ? categoryName : 'Sản phẩm'}</a>
+    <span class="crumb-sep">›</span>
+    <span class="text-muted">${product.name}</span>
 </nav>
 
 <!-- Khoi thong tin chinh: anh ben trai, thong tin + mua hang ben phai -->
@@ -34,13 +36,48 @@
             </div>
 
             <div class="detail-price-box">
-                <span class="price"><fmt:formatNumber value="${product.price}" type="number"/> đ</span>
+                <c:choose>
+                    <c:when test="${product.hasVariants}">
+                        <span class="price" id="priceNow">
+                            <fmt:formatNumber value="${product.minPrice * (100 - product.discountPercent) / 100}" type="number" maxFractionDigits="0"/>
+                            <c:if test="${product.minPrice != product.maxPrice}">
+                                – <fmt:formatNumber value="${product.maxPrice * (100 - product.discountPercent) / 100}" type="number" maxFractionDigits="0"/>
+                            </c:if> đ
+                        </span>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="price" id="priceNow">
+                            <fmt:formatNumber value="${product.price * (100 - product.discountPercent) / 100}" type="number" maxFractionDigits="0"/> đ
+                        </span>
+                    </c:otherwise>
+                </c:choose>
+                <c:if test="${product.discountPercent > 0}">
+                    <span class="price-old"><fmt:formatNumber value="${product.hasVariants ? product.minPrice : product.price}" type="number" maxFractionDigits="0"/> đ</span>
+                    <span class="discount-badge">-${product.discountPercent}%</span>
+                </c:if>
             </div>
 
+            <%-- Nut chon phan loai (chi hien khi san pham co variants) --%>
+            <c:if test="${product.hasVariants}">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Phân loại</label>
+                    <div class="d-flex flex-wrap gap-2" id="variantGroup">
+                        <c:forEach var="v" items="${product.variants}">
+                            <button type="button" class="btn btn-outline-secondary variant-btn"
+                                    data-id="${v.id}"
+                                    data-price="${v.price * (100 - product.discountPercent) / 100}"
+                                    data-stock="${v.quantity}">${v.name}</button>
+                        </c:forEach>
+                    </div>
+                </div>
+            </c:if>
+
             <%-- Form them vao gio hang voi bo tang/giam so luong --%>
-            <form action="${pageContext.request.contextPath}/cart" method="post">
+            <form action="${pageContext.request.contextPath}/cart" method="post"
+                  onsubmit="return (${product.hasVariants} === false) || document.getElementById('variantId').value !== '' || (alert('Vui lòng chọn phân loại'), false);">
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="productId" value="${product.id}">
+                <input type="hidden" name="variantId" id="variantId" value="">
 
                 <label class="form-label fw-semibold">Số lượng</label>
                 <div class="input-group mb-3" style="max-width: 160px;">
@@ -98,6 +135,24 @@
         if (value < 1) value = 1;
         input.value = value;
     }
+
+    // Chon phan loai: doi gia + ton kho + gioi han so luong theo loai dang chon
+    document.querySelectorAll('.variant-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.variant-btn').forEach(function (b) {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline-secondary');
+            document.getElementById('variantId').value = btn.dataset.id;
+            var price = Number(btn.dataset.price);
+            document.getElementById('priceNow').innerText = price.toLocaleString('vi-VN') + ' đ';
+            var qty = document.getElementById('qty');
+            qty.max = btn.dataset.stock;
+            if (Number(qty.value) > Number(btn.dataset.stock)) qty.value = btn.dataset.stock;
+        });
+    });
 </script>
 
 <%@ include file="common/footer.jsp" %>
