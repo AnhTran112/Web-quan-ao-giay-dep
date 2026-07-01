@@ -29,17 +29,33 @@ public class HomeServlet extends HttpServlet {
         Integer categoryId = parseInt(req.getParameter("categoryId"));
         Long minPrice = parseLong(req.getParameter("minPrice"));
         Long maxPrice = parseLong(req.getParameter("maxPrice"));
+        String keyword = req.getParameter("keyword"); // tim theo ten san pham
 
+        // Lay toan bo san pham (dung ca de tinh gia cao nhat cho thanh truot loc)
+        List<Product> all = productDAO.getAll();
+
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         List<Product> products;
-        if (categoryId == null && minPrice == null && maxPrice == null) {
-            products = productDAO.getAll();
+        if (categoryId == null && minPrice == null && maxPrice == null && !hasKeyword) {
+            products = all;
         } else {
-            products = productDAO.filter(categoryId, minPrice, maxPrice);
+            products = productDAO.filter(categoryId, minPrice, maxPrice, keyword);
         }
         List<Category> categories = categoryDAO.getAll();
 
+        // Gia cao nhat -> gioi han phai cua thanh truot. Lam tron len boi 100.000 cho dep.
+        long priceMax = 1_000_000;
+        for (Product p : all) {
+            if (p.getPrice() != null) priceMax = Math.max(priceMax, p.getPrice().longValue());
+        }
+        priceMax = ((priceMax + 99_999) / 100_000) * 100_000;
+
         req.setAttribute("products", products);
         req.setAttribute("categories", categories);
+        req.setAttribute("priceMax", priceMax);
+        req.setAttribute("minPrice", minPrice); // giu lai de thanh truot hien dung vi tri da chon
+        req.setAttribute("maxPrice", maxPrice);
+        req.setAttribute("keyword", keyword);   // giu lai chu da go trong o tim kiem
         req.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(req, resp);
     }
 
