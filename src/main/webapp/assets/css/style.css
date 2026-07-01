@@ -35,11 +35,19 @@ img {
 
 /* ============ THE (CARD) SAN PHAM ============ */
 .product-card {
+    position: relative;
     border: none;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card-discount {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    margin-left: 0;
 }
 .product-card:hover {
     transform: translateY(-4px);
