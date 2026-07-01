@@ -29,10 +29,25 @@ CREATE TABLE products (
     price       DECIMAL(12,0) NOT NULL DEFAULT 0,
     image       VARCHAR(255),
     quantity    INT NOT NULL DEFAULT 0,          -- ton kho (Nguoi 3 tru kho khi dat hang)
+    discount_percent INT NOT NULL DEFAULT 0,     -- % giam gia (0-100)
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id),
     INDEX idx_products_category (category_id),
     INDEX idx_products_price (price)
+);
+
+-- ----------------------------
+-- Bang: product_variants (phan loai san pham) -- Nguoi 1 (Hoang) so huu
+-- Moi loai co gia + ton kho rieng.
+-- ----------------------------
+CREATE TABLE product_variants (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    name       VARCHAR(150) NOT NULL,
+    price      DECIMAL(12,0) NOT NULL DEFAULT 0,
+    quantity   INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    INDEX idx_variants_product (product_id)
 );
 
 -- ----------------------------
@@ -85,13 +100,22 @@ INSERT INTO categories (name, description) VALUES
 ('Ao thun',       'Ao thun nam nu'),
 ('Quan jean',     'Quan jean cac loai');
 
-INSERT INTO products (category_id, name, description, price, image, quantity) VALUES
-(1, 'Giay Sneaker Trang', 'Giay sneaker mau trang nang dong', 450000, 'sneaker-trang.jpg', 50),
-(1, 'Giay Chay Bo',       'Giay chay bo em chan',            650000, 'chay-bo.jpg',      30),
-(2, 'Giay Tay Den',       'Giay da nam mau den lich su',     800000, 'giay-tay-den.jpg', 20),
-(3, 'Ao Thun Basic',      'Ao thun co tron nhieu mau',       150000, 'ao-thun.jpg',      100),
-(3, 'Ao Polo',            'Ao polo co be',                   250000, 'ao-polo.jpg',      60),
-(4, 'Quan Jean Slimfit',  'Quan jean om dang the thao',      350000, 'jean-slim.jpg',    40);
+INSERT INTO products (category_id, name, description, price, image, quantity, discount_percent) VALUES
+(1, 'Giay Sneaker Trang', 'Giay sneaker mau trang nang dong', 450000, 'sneaker-trang.jpg', 50, 25),
+(1, 'Giay Chay Bo',       'Giay chay bo em chan',            650000, 'chay-bo.jpg',      30, 0),
+(2, 'Giay Tay Den',       'Giay da nam mau den lich su',     800000, 'giay-tay-den.jpg', 20, 10),
+(3, 'Ao Thun Basic',      'Ao thun co tron nhieu mau',       150000, 'ao-thun.jpg',      100, 0),
+(3, 'Ao Polo',            'Ao polo co be',                   250000, 'ao-polo.jpg',      60, 15),
+(4, 'Quan Jean Slimfit',  'Quan jean om dang the thao',      350000, 'jean-slim.jpg',    40, 0);
+
+-- Phan loai mau cho san pham 1 (Sneaker Trang) va 4 (Ao Thun Basic)
+INSERT INTO product_variants (product_id, name, price, quantity) VALUES
+(1, 'Size 39', 450000, 10),
+(1, 'Size 40', 460000, 15),
+(1, 'Size 41', 470000, 8),
+(4, 'Mau Trang', 150000, 40),
+(4, 'Mau Den',   150000, 35),
+(4, 'Mau Xanh',  160000, 25);
 
 INSERT INTO users (username, password, full_name, role) VALUES
 ('admin', '123456', 'Quan Tri Vien', 'ADMIN');
