@@ -4,7 +4,7 @@
 
 <!-- Banner chao mung -->
 <div class="hero-banner">
-    <h1>👟 ShoeShop — Giày dép &amp; Thời trang</h1>
+    <h1>ShoeShop — Giày dép &amp; Thời trang</h1>
     <p>Tuyển chọn giày sneaker, giày tây, áo thun, quần jean chính hãng — giá tốt mỗi ngày.</p>
 </div>
 
@@ -51,7 +51,7 @@
                                    min="0" max="${priceMax}" step="10000" value="${maxVal}">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">🔍 Tìm kiếm</button>
+                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
                 </form>
             </div>
         </div>
@@ -59,41 +59,57 @@
 
     <!-- Cot phai: danh sach san pham -->
     <div class="col-md-9">
-        <h4 class="mb-3 fw-bold">Sản phẩm</h4>
-        <div class="row">
+        <div class="section-head d-flex align-items-center justify-content-between mb-3">
+            <h4 class="fw-bold mb-0">Tất cả sản phẩm</h4>
+            <span class="text-muted small">${products.size()} sản phẩm</span>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
             <c:forEach var="p" items="${products}">
-                <div class="col-md-4 mb-4">
+                <div class="col">
                     <div class="card product-card h-100">
-                        <c:if test="${p.discountPercent > 0}">
-                            <span class="discount-badge card-discount">-${p.discountPercent}%</span>
-                        </c:if>
-                        <img src="${pageContext.request.contextPath}/assets/images/${p.image}"
-                             class="card-img-top" alt="${p.name}"
-                             onerror="this.src='https://via.placeholder.com/300x210?text=No+Image'">
+                        <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="product-thumb">
+                            <c:if test="${p.discountPercent > 0}">
+                                <span class="discount-badge card-discount">-${p.discountPercent}%</span>
+                            </c:if>
+                            <img src="${pageContext.request.contextPath}/assets/images/${p.image}"
+                                 alt="${p.name}"
+                                 onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+                        </a>
                         <div class="card-body d-flex flex-column">
-                            <h6 class="card-title">${p.name}</h6>
-                            <p class="product-price mb-2">
+                            <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="product-title-link">
+                                <h6 class="card-title">${p.name}</h6>
+                            </a>
+                            <div class="price-line mb-1">
                                 <c:choose>
                                     <c:when test="${p.discountPercent > 0}">
-                                        <fmt:formatNumber value="${p.price * (100 - p.discountPercent) / 100}" type="number" maxFractionDigits="0"/> đ
-                                        <span class="price-old"><fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/> đ</span>
+                                        <span class="price-now"><fmt:formatNumber value="${p.price * (100 - p.discountPercent) / 100}" type="number" maxFractionDigits="0"/>đ</span>
+                                        <span class="price-old"><fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/>đ</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/> đ
+                                        <span class="price-now"><fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/>đ</span>
                                     </c:otherwise>
                                 </c:choose>
-                            </p>
+                            </div>
+                            <div class="mb-3">
+                                <c:choose>
+                                    <c:when test="${p.quantity > 0}"><span class="stock-tag in">Còn hàng</span></c:when>
+                                    <c:otherwise><span class="stock-tag out">Tạm hết hàng</span></c:otherwise>
+                                </c:choose>
+                            </div>
                             <a href="${pageContext.request.contextPath}/product?id=${p.id}"
-                               class="btn btn-outline-primary mt-auto">Xem chi tiết</a>
+                               class="btn btn-primary w-100 mt-auto">Xem chi tiết</a>
                         </div>
                     </div>
                 </div>
             </c:forEach>
-
-            <c:if test="${empty products}">
-                <p class="text-muted">Không có sản phẩm nào.</p>
-            </c:if>
         </div>
+
+        <c:if test="${empty products}">
+            <div class="empty-state text-center text-muted py-5">
+                <p class="mb-0">Không tìm thấy sản phẩm nào phù hợp.</p>
+            </div>
+        </c:if>
     </div>
 </div>
 

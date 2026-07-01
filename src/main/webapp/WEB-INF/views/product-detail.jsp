@@ -27,10 +27,10 @@
             <h3 class="fw-bold mb-1">${product.name}</h3>
 
             <div class="rating-row">
-                <span class="stars">★★★★★</span> &nbsp;|&nbsp; ${not empty categoryName ? categoryName : 'Sản phẩm'}
+                ${not empty categoryName ? categoryName : 'Sản phẩm'}
                 &nbsp;|&nbsp;
                 <c:choose>
-                    <c:when test="${product.quantity > 0}">Còn hàng (${product.quantity} sản phẩm)</c:when>
+                    <c:when test="${product.quantity > 0}">Còn hàng</c:when>
                     <c:otherwise>Tạm hết hàng</c:otherwise>
                 </c:choose>
             </div>
@@ -90,7 +90,7 @@
                 <div class="d-flex gap-2 flex-wrap product-actions">
                     <button type="submit" class="btn btn-success btn-lg"
                             <c:if test="${product.quantity == 0}">disabled</c:if>>
-                        🛒 Thêm vào giỏ
+                        Thêm vào giỏ
                     </button>
                     <button type="submit" class="btn btn-buy-now btn-lg"
                             <c:if test="${product.quantity == 0}">disabled</c:if>>
@@ -101,9 +101,9 @@
 
             <%-- Dai cam ket dich vu, tao cam giac chuyen nghiep --%>
             <div class="commit-strip">
-                <span>🚚 Giao hàng toàn quốc</span>
-                <span>🔄 Đổi trả trong 7 ngày</span>
-                <span>✅ Cam kết hàng chính hãng</span>
+                <span>Giao hàng toàn quốc</span>
+                <span>Đổi trả trong 7 ngày</span>
+                <span>Cam kết hàng chính hãng</span>
             </div>
         </div>
     </div>
