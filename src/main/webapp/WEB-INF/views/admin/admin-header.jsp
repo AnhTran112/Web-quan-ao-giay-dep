@@ -9,18 +9,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang quản trị</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/style.css?v=8" rel="stylesheet">
 </head>
-<body>
-<nav class="navbar navbar-dark bg-dark">
+<body class="admin-body">
+<nav class="navbar navbar-dark bg-dark admin-navbar">
     <div class="container-fluid">
-        <span class="navbar-brand">⚙️ Admin Panel</span>
-        <div>
-            <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/dashboard">Thống kê</a>
-            <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/products">Sản phẩm</a>
-            <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/categories">Danh mục</a>
-            <a class="btn btn-sm btn-outline-light" href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a>
-            <a class="btn btn-sm btn-outline-warning" href="${pageContext.request.contextPath}/admin/logout">Đăng xuất</a>
+        <span class="navbar-brand fw-bold">Admin Panel</span>
+        <div class="admin-nav d-flex gap-1 flex-wrap align-items-center">
+            <a data-nav="dashboard"  href="${pageContext.request.contextPath}/admin/dashboard">Thống kê</a>
+            <a data-nav="products"   href="${pageContext.request.contextPath}/admin/products">Sản phẩm</a>
+            <a data-nav="categories" href="${pageContext.request.contextPath}/admin/categories">Danh mục</a>
+            <a data-nav="orders"     href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a>
+            <a class="btn btn-sm btn-warning ms-2" href="${pageContext.request.contextPath}/admin/logout">Đăng xuất</a>
         </div>
     </div>
 </nav>
+<script>
+    // To dam muc dang xem tren thanh dieu huong admin
+    (function () {
+        var path = location.pathname;
+        document.querySelectorAll('.admin-nav a[data-nav]').forEach(function (a) {
+            if (path.indexOf('/admin/' + a.getAttribute('data-nav')) >= 0) a.classList.add('active');
+        });
+    })();
+</script>
 <div class="container my-4">

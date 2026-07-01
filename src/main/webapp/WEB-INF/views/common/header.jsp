@@ -9,12 +9,12 @@
     <title>Shop Giày Dép</title>
     <!-- Bootstrap 5 qua CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/assets/css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/style.css?v=7" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/home">👟 ShoeShop</a>
+        <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/home">ShoeShop</a>
         <%-- Nut hamburger: hien tren man hinh nho de mo/dong menu --%>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#mainNav" aria-controls="mainNav"
@@ -26,7 +26,7 @@
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
             </ul>
             <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light mt-2 mt-lg-0">
-                🛒 Giỏ hàng
+                Giỏ hàng
             </a>
         </div>
     </div>
