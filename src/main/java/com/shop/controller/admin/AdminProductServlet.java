@@ -114,6 +114,31 @@ public class AdminProductServlet extends HttpServlet {
             e.printStackTrace();
         }
 
+        // ===== DOC % GIAM GIA (kep trong khoang 0-100) =====
+        int discountPercent = 0;
+        try {
+            discountPercent = Integer.parseInt(req.getParameter("discountPercent"));
+        } catch (Exception ignore) {}
+        if (discountPercent < 0) discountPercent = 0;
+        if (discountPercent > 100) discountPercent = 100;
+
+        // ===== DOC PHAN LOAI (variants): 3 mang song song, bo dong ten rong =====
+        java.util.List<com.shop.model.ProductVariant> variants = new java.util.ArrayList<>();
+        String[] vNames = req.getParameterValues("variantName");
+        String[] vPrices = req.getParameterValues("variantPrice");
+        String[] vQtys = req.getParameterValues("variantQty");
+        if (vNames != null) {
+            for (int i = 0; i < vNames.length; i++) {
+                String vn = vNames[i] == null ? "" : vNames[i].trim();
+                if (vn.isEmpty()) continue; // bo dong khong nhap ten
+                java.math.BigDecimal vp = java.math.BigDecimal.ZERO;
+                int vq = 0;
+                try { if (vPrices != null) vp = new java.math.BigDecimal(vPrices[i]); } catch (Exception ignore) {}
+                try { if (vQtys != null) vq = Integer.parseInt(vQtys[i]); } catch (Exception ignore) {}
+                variants.add(new com.shop.model.ProductVariant(0, vn, vp, vq));
+            }
+        }
+
         // ===== VALIDATE PHIA SERVER =====
         String error = null;
         BigDecimal price = null;
@@ -142,6 +167,8 @@ public class AdminProductServlet extends HttpServlet {
         p.setQuantity(quantity);
         p.setImage(image);
         p.setDescription(description);
+        p.setDiscountPercent(discountPercent);
+        p.setVariants(variants);
         if (idParam != null && !idParam.isEmpty()) p.setId(Integer.parseInt(idParam));
 
         // Neu co loi -> quay lai form, giu lai du lieu da nhap + bao loi

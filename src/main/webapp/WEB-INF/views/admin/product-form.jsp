@@ -35,6 +35,12 @@
         <label class="form-label">Số lượng</label>
         <input type="number" name="quantity" class="form-control" value="${product.quantity}" min="0" required>
     </div>
+    <div class="mb-3">
+        <label class="form-label">Giảm giá (%)</label>
+        <input type="number" name="discountPercent" class="form-control"
+               value="${empty product.discountPercent ? 0 : product.discountPercent}" min="0" max="100">
+        <div class="form-text">Để 0 nếu không giảm giá. Áp dụng cho cả giá gốc và giá phân loại.</div>
+    </div>
 
     <%-- === KHU VUC UPLOAD ANH === --%>
     <div class="mb-3">
@@ -62,8 +68,49 @@
         <label class="form-label">Mô tả</label>
         <textarea name="description" class="form-control" rows="3">${product.description}</textarea>
     </div>
+    <div class="mb-3">
+        <label class="form-label d-block fw-semibold">Phân loại (tùy chọn — để trống nếu sản phẩm không có phân loại)</label>
+        <table class="table table-sm align-middle" id="variantTable">
+            <thead>
+                <tr>
+                    <th>Tên loại</th>
+                    <th style="width:150px;">Giá (VNĐ)</th>
+                    <th style="width:110px;">Kho</th>
+                    <th style="width:50px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="v" items="${product.variants}">
+                    <tr>
+                        <td><input type="text" name="variantName" class="form-control" value="${v.name}" placeholder="VD: Size 40, Màu Đỏ..."></td>
+                        <td><input type="number" name="variantPrice" class="form-control" value="${v.price}" min="0"></td>
+                        <td><input type="number" name="variantQty" class="form-control" value="${v.quantity}" min="0"></td>
+                        <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVariantRow(this)">×</button></td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addVariantRow()">+ Thêm phân loại</button>
+    </div>
+
     <button type="submit" class="btn btn-primary">Lưu</button>
     <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-secondary">Hủy</a>
 </form>
+
+<script>
+    // Them 1 dong phan loai moi vao bang
+    function addVariantRow() {
+        var tbody = document.querySelector('#variantTable tbody');
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+            '<td><input type="text" name="variantName" class="form-control" placeholder="VD: Size 40, Màu Đỏ..."></td>' +
+            '<td><input type="number" name="variantPrice" class="form-control" min="0"></td>' +
+            '<td><input type="number" name="variantQty" class="form-control" min="0"></td>' +
+            '<td><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVariantRow(this)">×</button></td>';
+        tbody.appendChild(tr);
+    }
+    // Xoa 1 dong phan loai
+    function removeVariantRow(btn) { btn.closest('tr').remove(); }
+</script>
 
 <%@ include file="admin-footer.jsp" %>
