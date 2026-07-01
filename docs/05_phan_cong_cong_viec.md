@@ -124,6 +124,17 @@ Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và
 - [ ] (Nâng cấp) Badge số món + phân trang
 - [ ] Docs + slide phần mình
 
+### 3.7. Ghi chú tích hợp phân loại (variants) — do Hoàng bàn giao
+Trang chi tiết sản phẩm giờ có **phân loại** (mỗi loại có giá + tồn kho riêng) và **giảm giá %**.
+Khi làm giỏ hàng, cần xử lý thêm:
+- `product-detail.jsp` gửi kèm `variantId` khi bấm **Thêm vào giỏ / Mua ngay** (rỗng nếu sản phẩm không có phân loại).
+- `CartServlet action=add`: nếu `variantId` khác rỗng → lấy giá + tên **theo `ProductVariant`**
+  (dùng `ProductVariantDAO.getByProductId(productId)` rồi tìm đúng id) thay cho `product.price`.
+  Nhớ áp `discount_percent` của sản phẩm lên giá (giá bán = giá × (100 − discount) / 100).
+- `CartItem` nên thêm 2 trường: `variantId` và `variantName` (để hiển thị "Size 40" trong giỏ).
+- **Khóa gộp dòng** trong giỏ là cặp `(productId, variantId)` — cùng sản phẩm nhưng khác loại là 2 dòng riêng.
+- Tồn kho để kiểm tra là `variant.quantity` (nếu có phân loại), ngược lại `product.quantity`.
+
 ---
 
 ## 4. NGƯỜI 3 — KHOA · Vòng đời đơn hàng (đặt hàng → admin xử lý)
