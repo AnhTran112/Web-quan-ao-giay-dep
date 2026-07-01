@@ -29,7 +29,7 @@ CREATE TABLE products (
     price       DECIMAL(12,0) NOT NULL DEFAULT 0,
     image       VARCHAR(255),
     quantity    INT NOT NULL DEFAULT 0,          -- ton kho (Nguoi 3 tru kho khi dat hang)
-    discount_percent INT NOT NULL DEFAULT 0,     -- % giam gia (0-100)
+    discount_percent INT NOT NULL DEFAULT 0,     -- % giảm giá (0-100)
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id),
     INDEX idx_products_category (category_id),
@@ -37,8 +37,8 @@ CREATE TABLE products (
 );
 
 -- ----------------------------
--- Bang: product_variants (phan loai san pham) -- Nguoi 1 (Hoang) so huu
--- Moi loai co gia + ton kho rieng.
+-- Bảng: product_variants (phân loại sản phẩm) -- Người 1 (Hoàng) sở hữu
+-- Mỗi loại có giá + tồn kho riêng.
 -- ----------------------------
 CREATE TABLE product_variants (
     id         INT AUTO_INCREMENT PRIMARY KEY,
@@ -108,14 +108,14 @@ INSERT INTO products (category_id, name, description, price, image, quantity, di
 (3, 'Ao Polo',            'Ao polo co be',                   250000, 'ao-polo.jpg',      60, 15),
 (4, 'Quan Jean Slimfit',  'Quan jean om dang the thao',      350000, 'jean-slim.jpg',    40, 0);
 
--- Phan loai mau cho san pham 1 (Sneaker Trang) va 4 (Ao Thun Basic)
+-- Phân loại mẫu cho sản phẩm 1 (Sneaker Trắng) và 4 (Áo Thun Basic)
 INSERT INTO product_variants (product_id, name, price, quantity) VALUES
 (1, 'Size 39', 450000, 10),
 (1, 'Size 40', 460000, 15),
 (1, 'Size 41', 470000, 8),
-(4, 'Mau Trang', 150000, 40),
-(4, 'Mau Den',   150000, 35),
-(4, 'Mau Xanh',  160000, 25);
+(4, 'Màu Trắng', 150000, 40),
+(4, 'Màu Đen',   150000, 35),
+(4, 'Màu Xanh',  160000, 25);
 
 INSERT INTO users (username, password, full_name, role) VALUES
 ('admin', '123456', 'Quan Tri Vien', 'ADMIN');
