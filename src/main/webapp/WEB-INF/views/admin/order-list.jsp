@@ -28,6 +28,8 @@
                     </c:choose>
                 </td>
                 <td>
+                    <a href="${pageContext.request.contextPath}/admin/orders?action=detail&id=${o.id}"
+                       class="btn btn-sm btn-info me-1">Xem chi tiết</a>
                     <c:if test="${o.status != 'DELIVERED'}">
                         <form action="${pageContext.request.contextPath}/admin/orders" method="post" class="d-inline">
                             <input type="hidden" name="id" value="${o.id}">
