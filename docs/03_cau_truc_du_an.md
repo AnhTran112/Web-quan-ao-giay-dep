@@ -23,7 +23,7 @@ Do_An-LTW/
     │   │   ├── Order.java          # Đơn hàng
     │   │   ├── OrderItem.java      # Chi tiết đơn hàng
     │   │   ├── User.java           # Tài khoản admin
-    │   │   └── CartItem.java       # 1 dòng trong giỏ (chỉ ở Session)
+    │   │   └── CartItem.java       # 1 dòng trong giỏ (chỉ ở Cookie)
     │   │
     │   ├── dao/                    # DAO: truy vấn database
     │   │   ├── CategoryDAO.java
@@ -34,7 +34,7 @@ Do_An-LTW/
     │   ├── controller/            # CONTROLLER: các Servlet
     │   │   ├── HomeServlet.java        # Trang chủ + lọc sản phẩm
     │   │   ├── ProductDetailServlet.java  # Chi tiết sản phẩm
-    │   │   ├── CartServlet.java        # Giỏ hàng (Session)
+    │   │   ├── CartServlet.java        # Giỏ hàng (Cookie)
     │   │   ├── CheckoutServlet.java    # Đặt hàng
     │   │   └── admin/
     │   │       ├── LoginServlet.java       # Đăng nhập / đăng xuất admin

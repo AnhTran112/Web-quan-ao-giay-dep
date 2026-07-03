@@ -36,11 +36,35 @@ public class HomeServlet extends HttpServlet {
 
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         List<Product> products;
-        if (categoryId == null && minPrice == null && maxPrice == null && !hasKeyword) {
-            products = all;
-        } else {
-            products = productDAO.filter(categoryId, minPrice, maxPrice, keyword);
+        
+        int page = 1;
+        int pageSize = 6;
+        Integer paramPage = parseInt(req.getParameter("page"));
+        if (paramPage != null && paramPage > 0) {
+            page = paramPage;
         }
+
+        int totalPages = 1;
+
+        if (categoryId == null && minPrice == null && maxPrice == null && !hasKeyword) {
+            // Unfiltered: use DB pagination
+            int totalCount = productDAO.getTotalCount();
+            totalPages = (int) Math.ceil((double) totalCount / pageSize);
+            products = productDAO.getPage((page - 1) * pageSize, pageSize);
+        } else {
+            // Filtered: apply filter then in-memory pagination
+            List<Product> filtered = productDAO.filter(categoryId, minPrice, maxPrice, keyword);
+            totalPages = (int) Math.ceil((double) filtered.size() / pageSize);
+            int start = (page - 1) * pageSize;
+            int end = Math.min(start + pageSize, filtered.size());
+            if (start > filtered.size()) {
+                start = 0; end = 0;
+            }
+            products = filtered.subList(start, end);
+        }
+        
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", totalPages);
         List<Category> categories = categoryDAO.getAll();
 
         // Gia cao nhat -> gioi han phai cua thanh truot. Lam tron len boi 100.000 cho dep.

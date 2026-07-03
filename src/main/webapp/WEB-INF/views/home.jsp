@@ -110,6 +110,18 @@
                 <p class="mb-0">Không tìm thấy sản phẩm nào phù hợp.</p>
             </div>
         </c:if>
+
+        <c:if test="${totalPages > 1}">
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <li class="page-item ${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" href="${pageContext.request.contextPath}/home?page=${i}&categoryId=${param.categoryId}&minPrice=${param.minPrice}&maxPrice=${param.maxPrice}&keyword=${param.keyword}">${i}</a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </nav>
+        </c:if>
     </div>
 </div>
 
