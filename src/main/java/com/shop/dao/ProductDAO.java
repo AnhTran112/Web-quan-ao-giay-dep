@@ -82,6 +82,40 @@ public class ProductDAO {
         return list;
     }
 
+    /** Lay san pham co phan trang. */
+    public List<Product> getPage(int offset, int limit) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products ORDER BY id DESC LIMIT ? OFFSET ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /** Dem tong so san pham (dung de tinh tong so trang). */
+    public int getTotalCount() {
+        String sql = "SELECT COUNT(*) FROM products";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     // =====================================================
     // TODO (Nguoi 1 - Hoang): hoan thien CRUD san pham
     // =====================================================

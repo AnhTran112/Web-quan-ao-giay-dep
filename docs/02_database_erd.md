@@ -95,6 +95,6 @@
 - 1 **category** có nhiều **products** (1–n).
 - 1 **order** có nhiều **order_items** (1–n).
 - 1 **product** xuất hiện trong nhiều **order_items** (1–n).
-- **Giỏ hàng (Cart) KHÔNG có bảng riêng** → lưu trong Session của user.
+- **Giỏ hàng (Cart) KHÔNG có bảng riêng** → lưu trong Cookie của user.
 
 > File SQL tạo bảng + dữ liệu mẫu: xem `docs/database.sql`
