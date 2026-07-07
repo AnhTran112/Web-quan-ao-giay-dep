@@ -87,7 +87,7 @@
 |-----|------|-------|
 | id | INT, PK, AUTO_INCREMENT | Khóa chính |
 | username | VARCHAR(50) | Tên đăng nhập |
-| password | VARCHAR(255) | Mật khẩu (demo: lưu plain, thực tế nên mã hóa) |
+| password | VARCHAR(255) | Mật khẩu (đã được mã hóa BCrypt) |
 | full_name | VARCHAR(150) | Họ tên |
 | role | VARCHAR(20) | Vai trò: ADMIN |
 
