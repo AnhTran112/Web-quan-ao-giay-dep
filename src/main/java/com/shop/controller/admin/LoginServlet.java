@@ -35,8 +35,9 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        User user = userDAO.login(username, password);
-        if (user != null) {
+        User user = userDAO.findByUsername(username);
+        // Kiểm tra mật khẩu bằng thuật toán BCrypt
+        if (user != null && org.mindrot.jbcrypt.BCrypt.checkpw(password, user.getPassword())) {
             req.getSession().setAttribute("admin", user);
             resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
         } else {

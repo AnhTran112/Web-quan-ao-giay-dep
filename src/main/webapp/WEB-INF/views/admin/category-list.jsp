@@ -5,6 +5,10 @@
     <a href="${pageContext.request.contextPath}/admin/categories?action=new" class="btn btn-success">+ Thêm danh mục</a>
 </div>
 
+<c:if test="${not empty error}">
+    <div class="alert alert-danger">${error}</div>
+</c:if>
+
 <table class="table table-bordered table-hover align-middle">
     <thead class="table-light">
         <tr>

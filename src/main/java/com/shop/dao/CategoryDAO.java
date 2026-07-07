@@ -35,26 +35,63 @@ public class CategoryDAO {
 
     /** Lay 1 danh muc theo id (dung khi sua). */
     public Category getById(int id) {
-        // TODO: SELECT * FROM categories WHERE id = ?  -> tra ve Category hoac null
+        String sql = "SELECT * FROM categories WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Category(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("description"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     /** Them danh muc moi. */
     public boolean insert(Category c) {
-        // TODO: INSERT INTO categories(name, description) VALUES (?, ?)
+        String sql = "INSERT INTO categories(name, description) VALUES (?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, c.getName());
+            ps.setString(2, c.getDescription());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     /** Cap nhat danh muc. */
     public boolean update(Category c) {
-        // TODO: UPDATE categories SET name=?, description=? WHERE id=?
+        String sql = "UPDATE categories SET name=?, description=? WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, c.getName());
+            ps.setString(2, c.getDescription());
+            ps.setInt(3, c.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     /** Xoa danh muc theo id. */
     public boolean delete(int id) {
-        // TODO: DELETE FROM categories WHERE id=?
-        // Luu y: san pham dang tham chieu category_id -> can xu ly rang buoc khoa ngoai.
+        String sql = "DELETE FROM categories WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }
