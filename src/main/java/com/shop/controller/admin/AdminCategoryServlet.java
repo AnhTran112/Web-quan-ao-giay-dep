@@ -30,12 +30,20 @@ public class AdminCategoryServlet extends HttpServlet {
                 req.getRequestDispatcher("/WEB-INF/views/admin/category-form.jsp").forward(req, resp);
                 break;
             case "edit":
-                // TODO (Nguyen): int id = ...; req.setAttribute("category", categoryDAO.getById(id));
+                int id = Integer.parseInt(req.getParameter("id"));
+                req.setAttribute("category", categoryDAO.getById(id));
                 req.getRequestDispatcher("/WEB-INF/views/admin/category-form.jsp").forward(req, resp);
                 break;
             case "delete":
-                // TODO (Nguyen): int id = ...; categoryDAO.delete(id);
-                resp.sendRedirect(req.getContextPath() + "/admin/categories");
+                int delId = Integer.parseInt(req.getParameter("id"));
+                boolean success = categoryDAO.delete(delId);
+                if (!success) {
+                    req.setAttribute("error", "Lỗi: Không thể xóa danh mục này vì vẫn đang chứa sản phẩm!");
+                    req.setAttribute("categories", categoryDAO.getAll());
+                    req.getRequestDispatcher("/WEB-INF/views/admin/category-list.jsp").forward(req, resp);
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/admin/categories");
+                }
                 break;
             default:
                 req.setAttribute("categories", categoryDAO.getAll());
@@ -46,8 +54,22 @@ public class AdminCategoryServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // TODO (Nguyen): doc form (id, name, description);
-        //   neu id rong -> categoryDAO.insert(c); nguoc lai -> categoryDAO.update(c);
+        req.setCharacterEncoding("UTF-8");
+        String idStr = req.getParameter("id");
+        String name = req.getParameter("name");
+        String description = req.getParameter("description");
+        
+        com.shop.model.Category c = new com.shop.model.Category();
+        c.setName(name);
+        c.setDescription(description);
+        
+        if (idStr == null || idStr.trim().isEmpty()) {
+            categoryDAO.insert(c);
+        } else {
+            c.setId(Integer.parseInt(idStr));
+            categoryDAO.update(c);
+        }
+        
         resp.sendRedirect(req.getContextPath() + "/admin/categories");
     }
 }

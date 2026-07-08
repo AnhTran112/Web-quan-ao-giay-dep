@@ -24,7 +24,7 @@ Xây dựng một website bán hàng cơ bản gồm 2 phần:
 1. Xem danh sách sản phẩm (trang chủ).
 2. Lọc sản phẩm theo **danh mục** và **khoảng giá**.
 3. Xem chi tiết một sản phẩm.
-4. Thêm sản phẩm vào **giỏ hàng** (lưu bằng Session).
+4. Thêm sản phẩm vào **giỏ hàng** (lưu bằng Cookie).
 5. Xem / cập nhật / xóa sản phẩm trong giỏ hàng.
 6. Đặt hàng: điền **tên, số điện thoại, địa chỉ** → tạo đơn hàng.
 

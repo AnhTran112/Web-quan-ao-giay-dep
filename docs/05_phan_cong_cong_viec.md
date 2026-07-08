@@ -8,7 +8,7 @@
 Website **KHÔNG có thanh toán online**. Luồng đặt hàng thực tế:
 
 ```
-Khách: xem sản phẩm → thêm vào giỏ (Session) → /checkout điền Tên + SĐT + Địa chỉ
+1. **Khách**: xem sản phẩm → thêm vào giỏ (Cookie) → `/checkout` điền Tên + SĐT + Địa chỉ
       → bấm "Xác nhận đặt hàng"
       → đơn được LƯU vào DB với trạng thái PENDING (chưa thanh toán)
 Admin: vào /admin/orders thấy đơn mới + SĐT khách
@@ -25,7 +25,7 @@ Tức là **"đặt hàng" = gửi form đơn cho admin để admin liên hệ**
 | Người | Branch git | Mảng phụ trách | Sở hữu dữ liệu |
 |-------|-----------|----------------|-----------------|
 | **Người 1 – Hoàng** (nhóm trưởng) | `Hoàng` | Nền tảng dự án + Quản lý sản phẩm (Admin) | bảng `products` |
-| **Người 2 – Anh** | `Anh` | Khách hàng: Duyệt sản phẩm + Giỏ hàng | giỏ hàng (Session) |
+| **Người 2 – Anh** | `Anh` | Khách hàng: Duyệt sản phẩm + Giỏ hàng | giỏ hàng (Cookie) |
 | **Người 3 – Khoa** | `Khoa` | Vòng đời đơn hàng (đặt hàng + admin xử lý) | bảng `orders`, `order_items` |
 | **Người 4 – Nguyên** | `Nguyên` | Đăng nhập/Bảo mật + Quản lý danh mục + Thống kê | bảng `users`, `categories` |
 
@@ -87,7 +87,7 @@ Dựng và giữ "khung xương" dự án, tích hợp (merge) code cả nhóm, 
 ## 3. NGƯỜI 2 — ANH · Khách hàng: Duyệt sản phẩm + Giỏ hàng
 
 ### 3.1. Vai trò
-Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và giỏ hàng (lưu bằng Session).
+Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và giỏ hàng (lưu bằng Cookie).
 
 ### 3.2. File phụ trách
 **Đã có sẵn (giải thích):**
@@ -97,25 +97,25 @@ Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và
 - `model/CartItem.java`
 
 **Phải hoàn thiện (đang để trống):**
-- `controller/CartServlet.java` — quản lý giỏ trong `session.getAttribute("cart")`:
+- `controller/CartServlet.java` — quản lý giỏ trong `Cookie` (`cart`):
   - `action=add` → đọc `productId`, `quantity`; nếu đã có thì cộng dồn, chưa có thì thêm `CartItem`
   - `action=update` → đổi số lượng 1 dòng
   - `action=remove` → xóa 1 dòng theo `productId`
-  - lưu lại `List<CartItem>` vào session, rồi forward/redirect về `cart.jsp`
+  - lưu lại thông tin giỏ hàng vào cookie, rồi forward/redirect về `cart.jsp`
 - `views/cart.jsp` — nối nút Xóa / cập nhật số lượng, tính tổng tiền
 
 ### 3.3. Nâng cấp ăn điểm
 - **Cập nhật số lượng ngay trong giỏ** (ô number + nút Cập nhật).
-- **Badge đếm số món** trên navbar (đọc `sessionScope.cart` hiển thị số lượng).
+- **Badge đếm số món** trên navbar (đọc `cookie cart` hiển thị số lượng).
 - **Phân trang** danh sách sản phẩm trang chủ (vd 6 sản phẩm/trang) + `ProductDAO.getPage(offset, limit)`.
 
 ### 3.4. Docs phụ trách
 - `docs/01_mo_ta_de_tai.md` (mục chức năng khách hàng)
-- Tài liệu mô tả giỏ hàng (cơ chế Session)
+- Tài liệu mô tả giỏ hàng (cơ chế Cookie)
 
 ### 3.5. Thuyết trình
 - Trải nghiệm khách, lọc danh mục/khoảng giá
-- Cơ chế giỏ hàng bằng Session (vì sao không cần bảng DB)
+- Cơ chế giỏ hàng bằng Cookie (vì sao không cần bảng DB)
 
 ### 3.6. Checklist
 - [ ] Thêm vào giỏ từ trang chi tiết OK
@@ -146,9 +146,9 @@ Sở hữu trọn `OrderDAO` + 2 bảng `orders`, `order_items`.
 ### 4.2. File phụ trách
 **Phải hoàn thiện (đang để trống):**
 - `controller/CheckoutServlet.java`:
-  - `doGet` → hiển thị `checkout.jsp` (kèm tính tổng tiền từ giỏ trong session)
+  - `doGet` → hiển thị `checkout.jsp` (kèm tính tổng tiền từ giỏ trong cookie)
   - `doPost` → đọc `customerName`, `phone`, `address`; tạo `Order` từ giỏ hàng;
-    gọi `OrderDAO.createOrder`; **xóa giỏ** khỏi session; forward sang `order-success.jsp`
+    gọi `OrderDAO.createOrder`; **xóa giỏ** khỏi cookie; forward sang `order-success.jsp`
 - `dao/OrderDAO.java` (viết toàn bộ):
   - `createOrder(Order)` → INSERT vào `orders`, lấy id tự tăng, INSERT từng dòng `order_items`
     → **dùng transaction** (commit/rollback) để đảm bảo toàn vẹn; lưu `price` tại thời điểm mua

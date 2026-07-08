@@ -1,51 +1,72 @@
 <%@ include file="common/header.jsp" %>
+<fmt:setLocale value="vi_VN" />
 
 <h3 class="mb-3">Giỏ hàng</h3>
 
 <table class="table table-bordered align-middle">
     <thead class="table-light">
         <tr>
+            <th style="width: 100px;">Ảnh</th>
             <th>Sản phẩm</th>
             <th>Giá</th>
-            <th>Số lượng</th>
+            <th style="width: 150px;">Số lượng</th>
             <th>Thành tiền</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        <c:forEach var="item" items="${cartItems}">
+        <c:forEach var="item" items="${cart}">
             <tr>
                 <td>
-                    <img src="${pageContext.request.contextPath}/assets/images/${item.image}" alt="${item.name}" style="width:50px; height:50px; object-fit:cover;" class="me-2 rounded">
-                    ${item.name}
+                    <img src="${pageContext.request.contextPath}/assets/images/${item.image}"
+                         alt="${item.name}" class="img-fluid rounded" style="max-width: 80px;"
+                         onerror="this.src='https://via.placeholder.com/80?text=No+Image'">
                 </td>
-                <td><fmt:formatNumber value="${item.price}" type="number"/> đ</td>
-                <td style="width: 150px;">
-                    <form action="${pageContext.request.contextPath}/cart" method="post" class="d-flex align-items-center m-0">
+                <td>
+                    <h6 class="mb-1">${item.name}</h6>
+                    <c:if test="${not empty item.variantName}">
+                        <small class="text-muted">Phân loại: ${item.variantName}</small>
+                    </c:if>
+                </td>
+                <td><fmt:formatNumber value="${item.price}" type="number" maxFractionDigits="0"/> đ</td>
+                <td>
+                    <form action="${pageContext.request.contextPath}/cart" method="post" class="d-flex align-items-center">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="productId" value="${item.productId}">
-                        <input type="number" name="quantity" class="form-control form-control-sm me-1 text-center" value="${item.quantity}" min="1" style="width: 60px;">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Lưu</button>
+                        <input type="hidden" name="variantId" value="${item.variantId != null ? item.variantId : 0}">
+                        <input type="number" name="quantity" class="form-control form-control-sm me-2" 
+                               value="${item.quantity}" min="1" style="width: 70px;">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Cập nhật</button>
                     </form>
                 </td>
-                <td class="fw-bold"><fmt:formatNumber value="${item.subtotal}" type="number"/> đ</td>
+                <td><fmt:formatNumber value="${item.subtotal}" type="number" maxFractionDigits="0"/> đ</td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/cart?action=remove&productId=${item.productId}"
+                    <a href="${pageContext.request.contextPath}/cart?action=remove&productId=${item.productId}&variantId=${item.variantId != null ? item.variantId : 0}"
                        class="btn btn-sm btn-danger">Xóa</a>
                 </td>
             </tr>
         </c:forEach>
-        <c:if test="${empty cartItems}">
-            <tr><td colspan="5" class="text-center text-muted py-4">Giỏ hàng trống</td></tr>
+        <c:if test="${empty cart}">
+            <tr><td colspan="6" class="text-center text-muted py-4">Giỏ hàng của bạn đang trống.</td></tr>
         </c:if>
     </tbody>
+    <c:if test="${not empty cart}">
+        <tfoot class="table-light fw-bold">
+            <tr>
+                <td colspan="4" class="text-end">Tổng cộng:</td>
+                <td colspan="2" class="text-danger fs-5">
+                    <fmt:formatNumber value="${total}" type="number" maxFractionDigits="0"/> đ
+                </td>
+            </tr>
+        </tfoot>
+    </c:if>
 </table>
 
-<c:if test="${not empty cartItems}">
-    <div class="d-flex justify-content-between align-items-center mt-3">
-        <h4 class="mb-0">Tổng tiền: <span class="text-danger fw-bold"><fmt:formatNumber value="${cartTotal}" type="number"/> đ</span></h4>
-        <a href="${pageContext.request.contextPath}/checkout" class="btn btn-primary btn-lg px-5">Tiến hành đặt hàng →</a>
-    </div>
-</c:if>
+<div class="text-end">
+    <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-primary me-2">← Tiếp tục mua sắm</a>
+    <c:if test="${not empty cart}">
+        <a href="${pageContext.request.contextPath}/checkout" class="btn btn-primary">Đặt hàng →</a>
+    </c:if>
+</div>
 
 <%@ include file="common/footer.jsp" %>

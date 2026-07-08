@@ -25,10 +25,41 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
             </ul>
-            <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light mt-2 mt-lg-0">
+            <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light mt-2 mt-lg-0 position-relative">
                 Giỏ hàng
+                <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                    0
+                </span>
             </a>
         </div>
     </div>
+</nav>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function getCookie(name) {
+            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            if (match) return decodeURIComponent(match[2].replace(/\+/g, ' '));
+            return "";
+        }
+        let cartStr = getCookie("cart");
+        let count = 0;
+        if (cartStr) {
+            let items = cartStr.split(",");
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].trim() !== "") {
+                    let parts = items[i].split(":");
+                    if (parts.length === 3) {
+                        count += parseInt(parts[2]) || 0;
+                    }
+                }
+            }
+        }
+        if (count > 0) {
+            let badge = document.getElementById("cartBadge");
+            badge.innerText = count;
+            badge.style.display = "inline-block";
+        }
+    });
+</script>
 </nav>
 <div class="container my-4">

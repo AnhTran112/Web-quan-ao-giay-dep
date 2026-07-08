@@ -4,20 +4,24 @@ import java.math.BigDecimal;
 
 /**
  * Model: 1 dong trong gio hang.
- * CHI ton tai trong Session, KHONG luu database.
+ * Khong luu database, chi dung de khoi phuc danh sach tu Cookie hien thi cho nguoi dung.
  */
 public class CartItem {
     private int productId;
+    private Integer variantId; // co the null neu san pham khong co phan loai
     private String name;
+    private String variantName; // ten phan loai (vd: "Size 40", "Mau Do")
     private BigDecimal price;
     private String image;
     private int quantity;
 
     public CartItem() {}
 
-    public CartItem(int productId, String name, BigDecimal price, String image, int quantity) {
+    public CartItem(int productId, Integer variantId, String name, String variantName, BigDecimal price, String image, int quantity) {
         this.productId = productId;
+        this.variantId = variantId;
         this.name = name;
+        this.variantName = variantName;
         this.price = price;
         this.image = image;
         this.quantity = quantity;
@@ -31,8 +35,14 @@ public class CartItem {
     public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
 
+    public Integer getVariantId() { return variantId; }
+    public void setVariantId(Integer variantId) { this.variantId = variantId; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getVariantName() { return variantName; }
+    public void setVariantName(String variantName) { this.variantName = variantName; }
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
