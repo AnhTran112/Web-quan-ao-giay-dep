@@ -30,6 +30,7 @@ public class HomeServlet extends HttpServlet {
         Long minPrice = parseLong(req.getParameter("minPrice"));
         Long maxPrice = parseLong(req.getParameter("maxPrice"));
         String keyword = req.getParameter("keyword"); // tim theo ten san pham
+        String sort = req.getParameter("sort"); // tieu chi sap xep
 
         // Lay toan bo san pham (dung ca de tinh gia cao nhat cho thanh truot loc)
         List<Product> all = productDAO.getAll();
@@ -46,14 +47,14 @@ public class HomeServlet extends HttpServlet {
 
         int totalPages = 1;
 
-        if (categoryId == null && minPrice == null && maxPrice == null && !hasKeyword) {
+        if (categoryId == null && minPrice == null && maxPrice == null && !hasKeyword && (sort == null || sort.isEmpty() || sort.equals("newest"))) {
             // Unfiltered: use DB pagination
             int totalCount = productDAO.getTotalCount();
             totalPages = (int) Math.ceil((double) totalCount / pageSize);
             products = productDAO.getPage((page - 1) * pageSize, pageSize);
         } else {
             // Filtered: apply filter then in-memory pagination
-            List<Product> filtered = productDAO.filter(categoryId, minPrice, maxPrice, keyword);
+            List<Product> filtered = productDAO.filter(categoryId, minPrice, maxPrice, keyword, sort);
             totalPages = (int) Math.ceil((double) filtered.size() / pageSize);
             int start = (page - 1) * pageSize;
             int end = Math.min(start + pageSize, filtered.size());
@@ -80,6 +81,8 @@ public class HomeServlet extends HttpServlet {
         req.setAttribute("minPrice", minPrice); // giu lai de thanh truot hien dung vi tri da chon
         req.setAttribute("maxPrice", maxPrice);
         req.setAttribute("keyword", keyword);   // giu lai chu da go trong o tim kiem
+        req.setAttribute("categoryId", categoryId); // giu lai danh muc da chon
+        req.setAttribute("sort", sort);         // giu lai tieu chi sap xep
         req.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(req, resp);
     }
 

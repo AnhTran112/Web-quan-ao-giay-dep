@@ -60,7 +60,8 @@
 | price | DECIMAL(12,0) | Giá bán (VND) |
 | image | VARCHAR(255) | Tên file ảnh |
 | quantity | INT | Số lượng tồn kho |
-| created_at | DATETIME | Ngày thêm |
+| discount_percent | INT | 0 | % giảm giá |
+| created_at | DATETIME | CURRENT_TIMESTAMP | Ngày tạo |
 
 ### 3. `orders` — Đơn hàng
 | Cột | Kiểu | Mô tả |
@@ -119,8 +120,36 @@
 | full_name | VARCHAR(150) | Họ tên |
 | role | VARCHAR(20) | Vai trò: ADMIN |
 
+### 6. `activity_logs` — Nhật ký hoạt động admin
+| Cột | Kiểu | Mô tả |
+|-----|------|-------|
+| id | INT, PK, AUTO_INCREMENT | Khóa chính |
+| admin_username | VARCHAR(50) | Tên đăng nhập của admin |
+| action | VARCHAR(50) | Hành động (Thêm/Sửa/Xóa) |
+| details | TEXT | Mô tả chi tiết hành động |
+| created_at | DATETIME | Thời gian thực hiện |
+
+### 7. `reviews` — Đánh giá sản phẩm
+| Cột | Kiểu | Mô tả |
+|-----|------|-------|
+| id | INT, PK, AUTO_INCREMENT | Khóa chính |
+| product_id | INT, FK → products(id) | Thuộc sản phẩm nào |
+| phone | VARCHAR(20) | Số điện thoại đã đặt hàng |
+| rating | INT | Điểm đánh giá (1-5 sao) |
+| comment | TEXT | Nội dung đánh giá |
+| created_at | DATETIME | Thời gian đánh giá |
+
+### 8. `product_images` — Ảnh phụ của sản phẩm
+| Cột | Kiểu | Mô tả |
+|-----|------|-------|
+| id | INT, PK, AUTO_INCREMENT | Khóa chính |
+| product_id | INT, FK → products(id) | Thuộc sản phẩm nào |
+| image_url | VARCHAR(255) | Tên file ảnh phụ |
+
 ## Quan hệ
 - 1 **category** có nhiều **products** (1–n).
+- 1 **product** có nhiều **product_images** (1–n).
+- 1 **product** có nhiều **reviews** (1–n).
 - 1 **order** có nhiều **order_items** (1–n).
 - 1 **product** xuất hiện trong nhiều **order_items** (1–n).
 - **Giỏ hàng (Cart) KHÔNG có bảng riêng** → lưu trong Cookie của user.

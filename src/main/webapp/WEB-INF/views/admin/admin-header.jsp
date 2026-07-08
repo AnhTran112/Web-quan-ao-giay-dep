@@ -21,6 +21,7 @@
             <a data-nav="categories" href="${pageContext.request.contextPath}/admin/categories">Danh mục</a>
             <a data-nav="orders"     href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a>
             <a data-nav="coupons"    href="${pageContext.request.contextPath}/admin/coupons">Mã giảm giá</a>
+            <a data-nav="logs"       href="${pageContext.request.contextPath}/admin/logs">Nhật ký (Audit)</a>
             <a class="btn btn-sm btn-warning ms-2" href="${pageContext.request.contextPath}/admin/logout">Đăng xuất</a>
         </div>
     </div>

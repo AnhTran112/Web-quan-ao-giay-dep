@@ -129,6 +129,46 @@ CREATE TABLE users (
     role      VARCHAR(20) NOT NULL DEFAULT 'ADMIN'
 );
 
+-- ----------------------------
+-- Bảng: activity_logs (nhật ký hoạt động admin)
+-- ----------------------------
+CREATE TABLE activity_logs (
+    id             INT AUTO_INCREMENT PRIMARY KEY,
+    admin_username VARCHAR(50) NOT NULL,
+    action         VARCHAR(50) NOT NULL,
+    entity         VARCHAR(50) NOT NULL,
+    entity_id      INT,
+    description    TEXT,
+    created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_logs_admin (admin_username),
+    INDEX idx_logs_entity (entity)
+);
+
+-- ----------------------------
+-- Bảng: reviews (đánh giá sản phẩm)
+-- ----------------------------
+CREATE TABLE reviews (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    phone      VARCHAR(20) NOT NULL,
+    rating     INT NOT NULL DEFAULT 5, -- 1 đến 5 sao
+    comment    TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    INDEX idx_reviews_product (product_id)
+);
+
+-- ----------------------------
+-- Bảng: product_images (ảnh phụ của sản phẩm)
+-- ----------------------------
+CREATE TABLE product_images (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    image_url  VARCHAR(255) NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    INDEX idx_images_product (product_id)
+);
+
 -- =====================================================
 -- DỮ LIỆU MẪU
 -- =====================================================

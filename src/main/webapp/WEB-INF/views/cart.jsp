@@ -3,6 +3,17 @@
 
 <h3 class="mb-3">Giỏ hàng</h3>
 
+<c:if test="${param.error == 'out_of_stock'}">
+    <div class="alert alert-danger" role="alert">
+        Sản phẩm bạn chọn đã vượt quá số lượng tồn kho hiện có!
+    </div>
+</c:if>
+<c:if test="${param.error == 'invalid_product'}">
+    <div class="alert alert-danger" role="alert">
+        Sản phẩm không hợp lệ!
+    </div>
+</c:if>
+
 <table class="table table-bordered align-middle">
     <thead class="table-light">
         <tr>
@@ -33,7 +44,7 @@
                     <form action="${pageContext.request.contextPath}/cart" method="post" class="d-flex align-items-center">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="productId" value="${item.productId}">
-                        <input type="hidden" name="variantId" value="${item.variantId != null ? item.variantId : 0}">
+                        <input type="hidden" name="variantId" value="${empty item.variantId ? 0 : item.variantId}">
                         <input type="number" name="quantity" class="form-control form-control-sm me-2" 
                                value="${item.quantity}" min="1" style="width: 70px;">
                         <button type="submit" class="btn btn-sm btn-outline-secondary">Cập nhật</button>
@@ -41,8 +52,12 @@
                 </td>
                 <td><fmt:formatNumber value="${item.subtotal}" type="number" maxFractionDigits="0"/> đ</td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/cart?action=remove&productId=${item.productId}&variantId=${item.variantId != null ? item.variantId : 0}"
-                       class="btn btn-sm btn-danger">Xóa</a>
+                    <form action="${pageContext.request.contextPath}/cart" method="post" style="display:inline;">
+                        <input type="hidden" name="action" value="remove">
+                        <input type="hidden" name="productId" value="${item.productId}">
+                        <input type="hidden" name="variantId" value="${empty item.variantId ? 0 : item.variantId}">
+                        <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                    </form>
                 </td>
             </tr>
         </c:forEach>
@@ -61,6 +76,23 @@
         </tfoot>
     </c:if>
 </table>
+
+<c:if test="${empty cart and not empty suggestedProducts}">
+    <h5 class="mt-5 mb-3 text-center">Gợi ý cho bạn</h5>
+    <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+        <c:forEach var="p" items="${suggestedProducts}">
+            <div class="col">
+                <div class="card h-100">
+                    <a href="${pageContext.request.contextPath}/product?id=${p.id}"><img src="${pageContext.request.contextPath}/assets/images/${p.image}" class="card-img-top" style="object-fit: cover; height: 150px;"></a>
+                    <div class="card-body p-2 text-center">
+                        <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="text-decoration-none text-dark d-block text-truncate small">${p.name}</a>
+                        <strong class="text-danger small"><fmt:formatNumber value="${p.price}" type="number"/>đ</strong>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
+    </div>
+</c:if>
 
 <div class="text-end">
     <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-primary me-2">← Tiếp tục mua sắm</a>

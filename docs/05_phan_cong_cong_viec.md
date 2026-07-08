@@ -107,7 +107,12 @@ Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và
 ### 3.3. Nâng cấp ăn điểm
 - **Cập nhật số lượng ngay trong giỏ** (ô number + nút Cập nhật).
 - **Badge đếm số món** trên navbar (đọc `cookie cart` hiển thị số lượng).
-- **Phân trang** danh sách sản phẩm trang chủ (vd 6 sản phẩm/trang) + `ProductDAO.getPage(offset, limit)`.
+- **Thêm giỏ hàng bằng AJAX** không reload trang, hiển thị Toast message.
+- **Tính năng Đánh giá sản phẩm (Review)** (cho phép người dùng đánh giá nếu đã từng mua hàng).
+- **Thư viện ảnh sản phẩm (Gallery)** và **Sản phẩm liên quan**.
+- **Cá nhân hóa bằng Cookie**: Sản phẩm đã xem gần đây, Yêu thích (Wishlist).
+- **Quick-view Modal**: Xem nhanh thông tin sản phẩm từ trang chủ.
+- **Audit Log**: Ghi lại lịch sử thao tác của Admin (tính năng nâng cao).
 
 ### 3.4. Docs phụ trách
 - `docs/01_mo_ta_de_tai.md` (mục chức năng khách hàng)
@@ -118,11 +123,15 @@ Phụ trách toàn bộ trải nghiệm phía khách: xem/lọc sản phẩm và
 - Cơ chế giỏ hàng bằng Cookie (vì sao không cần bảng DB)
 
 ### 3.6. Checklist
-- [ ] Thêm vào giỏ từ trang chi tiết OK
-- [ ] Xóa / cập nhật số lượng trong giỏ OK
-- [ ] Tính tổng tiền đúng
-- [ ] (Nâng cấp) Badge số món + phân trang
-- [ ] Docs + slide phần mình
+- [x] Thêm vào giỏ từ trang chi tiết OK (hỗ trợ AJAX)
+- [x] Xóa / cập nhật số lượng trong giỏ OK
+- [x] Tính tổng tiền đúng
+- [x] Gợi ý sản phẩm khi giỏ hàng trống
+- [x] (Nâng cấp) Đánh giá, Gallery, Quick-view, Related Products
+- [x] (Nâng cấp) Wishlist & Sản phẩm đã xem (Cookie)
+- [x] (Nâng cấp) Audit Log (Nhật ký thao tác admin)
+- [x] Kiểm tra tồn kho phía server khi thêm/cập nhật giỏ hàng
+- [x] Docs + slide phần mình
 
 ### 3.7. Ghi chú tích hợp phân loại (variants) — do Hoàng bàn giao
 Trang chi tiết sản phẩm giờ có **phân loại** (mỗi loại có giá + tồn kho riêng) và **giảm giá %**.

@@ -43,6 +43,13 @@ public class CartServlet extends HttpServlet {
 
         req.setAttribute("cart", cart);
         req.setAttribute("total", total);
+
+        if (cart.isEmpty()) {
+            List<Product> suggestions = productDAO.filter(null, null, null, null, "newest");
+            if (suggestions.size() > 4) suggestions = suggestions.subList(0, 4);
+            req.setAttribute("suggestedProducts", suggestions);
+        }
+
         req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
     }
 
@@ -73,24 +80,52 @@ public class CartServlet extends HttpServlet {
         int variantId = parseInt(req.getParameter("variantId"), 0);
         int quantity = parseInt(req.getParameter("quantity"), 1);
 
-        String rawCookie = getRawCookie(req);
-        List<String> items = parseRawCookie(rawCookie);
+        Product p = productDAO.getById(productId);
+        if (p == null) {
+            resp.sendRedirect(req.getContextPath() + "/cart?error=invalid_product");
+            return;
+        }
 
-        boolean found = false;
-        String matchPrefix = productId + ":" + variantId + ":";
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).startsWith(matchPrefix)) {
-                String[] parts = items.get(i).split(":");
-                if (parts.length == 3) {
-                    int oldQty = parseInt(parts[2], 0);
-                    items.set(i, matchPrefix + (oldQty + quantity));
-                    found = true;
+        int stock = p.getQuantity();
+        if (variantId > 0 && p.getVariants() != null) {
+            for (ProductVariant v : p.getVariants()) {
+                if (v.getId() == variantId) {
+                    stock = v.getQuantity();
                     break;
                 }
             }
         }
 
-        if (!found) {
+        String rawCookie = getRawCookie(req);
+        List<String> items = parseRawCookie(rawCookie);
+
+        boolean found = false;
+        String matchPrefix = productId + ":" + variantId + ":";
+        int currentQty = 0;
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).startsWith(matchPrefix)) {
+                String[] parts = items.get(i).split(":");
+                if (parts.length == 3) {
+                    currentQty = parseInt(parts[2], 0);
+                    found = true;
+                }
+                break;
+            }
+        }
+
+        if (currentQty + quantity > stock) {
+            resp.sendRedirect(req.getContextPath() + "/cart?error=out_of_stock");
+            return;
+        }
+
+        if (found) {
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).startsWith(matchPrefix)) {
+                    items.set(i, matchPrefix + (currentQty + quantity));
+                    break;
+                }
+            }
+        } else {
             items.add(productId + ":" + variantId + ":" + quantity);
         }
 
@@ -102,6 +137,22 @@ public class CartServlet extends HttpServlet {
         int productId = parseInt(req.getParameter("productId"), 0);
         int variantId = parseInt(req.getParameter("variantId"), 0);
         int quantity = parseInt(req.getParameter("quantity"), 1);
+
+        Product p = productDAO.getById(productId);
+        if (p != null) {
+            int stock = p.getQuantity();
+            if (variantId > 0 && p.getVariants() != null) {
+                for (ProductVariant v : p.getVariants()) {
+                    if (v.getId() == variantId) {
+                        stock = v.getQuantity();
+                        break;
+                    }
+                }
+            }
+            if (quantity > stock) {
+                quantity = stock; // Limit to max stock
+            }
+        }
 
         String rawCookie = getRawCookie(req);
         List<String> items = parseRawCookie(rawCookie);
