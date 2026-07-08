@@ -15,19 +15,29 @@
             <div class="card-header fw-bold bg-white">Bộ lọc</div>
             <div class="card-body">
                 <form action="${pageContext.request.contextPath}/home" method="get">
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label class="form-label">Tìm kiếm</label>
-                        <input type="text" name="keyword" class="form-control"
+                        <input type="text" name="keyword" class="form-control" id="searchInput"
                                placeholder="Nhập tên sản phẩm..."
-                               value="<c:out value='${keyword}'/>">
+                               value="<c:out value='${keyword}'/>" autocomplete="off">
+                        <ul class="dropdown-menu w-100" id="searchDropdown" style="display: none; position: absolute;"></ul>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Danh mục</label>
                         <select name="categoryId" class="form-select">
                             <option value="">-- Tất cả --</option>
                             <c:forEach var="cat" items="${categories}">
-                                <option value="${cat.id}">${cat.name}</option>
+                                <option value="${cat.id}" ${categoryId == cat.id ? 'selected' : ''}>${cat.name}</option>
                             </c:forEach>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sắp xếp</label>
+                        <select name="sort" class="form-select">
+                            <option value="newest" ${sort == 'newest' ? 'selected' : ''}>Mới nhất</option>
+                            <option value="price_asc" ${sort == 'price_asc' ? 'selected' : ''}>Giá tăng dần</option>
+                            <option value="price_desc" ${sort == 'price_desc' ? 'selected' : ''}>Giá giảm dần</option>
+                            <option value="best_selling" ${sort == 'best_selling' ? 'selected' : ''}>Bán chạy nhất</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -68,10 +78,18 @@
             <c:forEach var="p" items="${products}">
                 <div class="col">
                     <div class="card product-card h-100">
-                        <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="product-thumb">
+                        <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="product-thumb position-relative d-block">
                             <c:if test="${p.discountPercent > 0}">
                                 <span class="discount-badge card-discount">-${p.discountPercent}%</span>
                             </c:if>
+                            <%-- Badge HOT (Giả lập sản phẩm bán chạy tạm thời bằng tồn kho thấp) --%>
+                            <c:if test="${p.quantity < 30 && p.quantity > 0}">
+                                <span class="badge bg-danger position-absolute top-0 start-0 m-2" style="margin-top: ${p.discountPercent > 0 ? '40px' : '0'} !important;">HOT</span>
+                            </c:if>
+                            <%-- Nút Yêu thích --%>
+                            <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 rounded-circle" onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist(${p.id})">
+                                <i class="bi bi-heart" id="heartIcon_${p.id}"></i>
+                            </button>
                             <img src="${pageContext.request.contextPath}/assets/images/${p.image}"
                                  alt="${p.name}"
                                  onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
@@ -97,8 +115,14 @@
                                     <c:otherwise><span class="stock-tag out">Tạm hết hàng</span></c:otherwise>
                                 </c:choose>
                             </div>
-                            <a href="${pageContext.request.contextPath}/product?id=${p.id}"
-                               class="btn btn-primary w-100 mt-auto">Xem chi tiết</a>
+                            <div class="d-flex justify-content-between align-items-center mt-auto gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50 quick-view-btn" data-id="${p.id}" onclick="openQuickView(${p.id})">
+                                    <i class="bi bi-eye"></i> Xem nhanh
+                                </button>
+                                <button type="button" class="btn btn-primary w-50 add-to-cart-btn" onclick="addToCartAjax(${p.id}, 1)">
+                                    <i class="bi bi-cart-plus"></i> Thêm giỏ
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,6 +181,48 @@
     maxEl.addEventListener('input', update);
     update();
 })();
+
+// Autocomplete Search
+document.addEventListener("DOMContentLoaded", function() {
+    let input = document.getElementById("searchInput");
+    let dropdown = document.getElementById("searchDropdown");
+    let timer = null;
+
+    input.addEventListener("input", function() {
+        clearTimeout(timer);
+        let q = input.value.trim();
+        if (q.length >= 2) {
+            timer = setTimeout(() => {
+                fetch('${pageContext.request.contextPath}/api/search?q=' + encodeURIComponent(q))
+                .then(res => res.json())
+                .then(data => {
+                    dropdown.innerHTML = "";
+                    if(data.length > 0) {
+                        data.forEach(item => {
+                            let li = document.createElement("li");
+                            li.innerHTML = '<a class="dropdown-item d-flex align-items-center" href="${pageContext.request.contextPath}/product?id=' + item.id + '">'
+                                         + '<img src="${pageContext.request.contextPath}/assets/images/' + item.image + '" width="30" height="30" class="me-2" style="object-fit: cover;">'
+                                         + '<span class="text-truncate" style="max-width: 150px;">' + item.name + '</span>'
+                                         + '</a>';
+                            dropdown.appendChild(li);
+                        });
+                        dropdown.style.display = "block";
+                    } else {
+                        dropdown.style.display = "none";
+                    }
+                });
+            }, 300);
+        } else {
+            dropdown.style.display = "none";
+        }
+    });
+
+    document.addEventListener("click", function(e) {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = "none";
+        }
+    });
+});
 </script>
 
 <%@ include file="common/footer.jsp" %>

@@ -14,6 +14,7 @@ public class Product {
     private String image;
     private int quantity;
     private int discountPercent;
+    private java.sql.Timestamp createdAt;
     private List<ProductVariant> variants = new ArrayList<>();
 
     public Product() {}
@@ -41,6 +42,9 @@ public class Product {
 
     public int getDiscountPercent() { return discountPercent; }
     public void setDiscountPercent(int discountPercent) { this.discountPercent = discountPercent; }
+
+    public java.sql.Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(java.sql.Timestamp createdAt) { this.createdAt = createdAt; }
 
     public List<ProductVariant> getVariants() { return variants; }
     public void setVariants(List<ProductVariant> variants) { this.variants = variants; }

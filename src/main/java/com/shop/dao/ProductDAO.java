@@ -48,8 +48,8 @@ public class ProductDAO {
         return null;
     }
 
-    /** Loc san pham theo danh muc va khoang gia (truyen null neu khong loc). */
-    public List<Product> filter(Integer categoryId, Long minPrice, Long maxPrice, String keyword) {
+    /** Loc san pham theo danh muc va khoang gia, sap xep. */
+    public List<Product> filter(Integer categoryId, Long minPrice, Long maxPrice, String keyword, String sort) {
         List<Product> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
         List<Object> params = new ArrayList<>();
@@ -69,7 +69,24 @@ public class ProductDAO {
             sql.append(" AND name LIKE ?");
             params.add("%" + keyword.trim() + "%");
         }
-        sql.append(" ORDER BY id DESC");
+        if (sort == null) sort = "newest";
+        switch (sort) {
+            case "price_asc":
+                sql.append(" ORDER BY price ASC");
+                break;
+            case "price_desc":
+                sql.append(" ORDER BY price DESC");
+                break;
+            case "best_selling":
+                // Tạm thời sắp xếp theo views vì chưa join với order_items để lấy best selling thật.
+                // Nếu cần best selling thật, cần query phức tạp hơn.
+                sql.append(" ORDER BY views DESC");
+                break;
+            case "newest":
+            default:
+                sql.append(" ORDER BY id DESC");
+                break;
+        }
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
@@ -219,6 +236,7 @@ public class ProductDAO {
         p.setImage(rs.getString("image"));
         p.setQuantity(rs.getInt("quantity"));
         p.setDiscountPercent(rs.getInt("discount_percent"));
+        p.setCreatedAt(rs.getTimestamp("created_at"));
         return p;
     }
 }

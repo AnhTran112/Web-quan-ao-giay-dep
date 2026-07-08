@@ -2,7 +2,9 @@ package com.shop.controller.admin;
 
 import com.shop.dao.CategoryDAO;
 import com.shop.dao.ProductDAO;
+import com.shop.dao.ActivityLogDAO;
 import com.shop.model.Product;
+import com.shop.model.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -54,7 +56,13 @@ public class AdminProductServlet extends HttpServlet {
                 // Lay san pham truoc khi xoa de biet ten file anh -> xoa luon file anh khoi o dia
                 Product deleting = productDAO.getById(deleteId);
                 productDAO.delete(deleteId);
-                if (deleting != null) deleteImageFile(deleting.getImage());
+                if (deleting != null) {
+                    deleteImageFile(deleting.getImage());
+                    User admin = (User) req.getSession().getAttribute("admin");
+                    if (admin != null) {
+                        ActivityLogDAO.log(admin.getUsername(), "Xóa sản phẩm", "Sản phẩm: " + deleting.getName() + " (ID: " + deleteId + ")");
+                    }
+                }
                 resp.sendRedirect(req.getContextPath() + "/admin/products");
                 break;
             default:
@@ -181,10 +189,17 @@ public class AdminProductServlet extends HttpServlet {
         }
 
         // id rong -> them moi; co id -> cap nhat
+        User admin = (User) req.getSession().getAttribute("admin");
         if (idParam == null || idParam.isEmpty()) {
             productDAO.insert(p);
+            if (admin != null) {
+                ActivityLogDAO.log(admin.getUsername(), "Thêm sản phẩm", "Sản phẩm: " + p.getName());
+            }
         } else {
             productDAO.update(p);
+            if (admin != null) {
+                ActivityLogDAO.log(admin.getUsername(), "Sửa sản phẩm", "Sản phẩm: " + p.getName() + " (ID: " + p.getId() + ")");
+            }
             // Neu admin chon anh moi (ten file thay doi) thi xoa anh cu cho do rac
             if (oldImage != null && !oldImage.isEmpty() && !oldImage.equals(image)) {
                 deleteImageFile(oldImage);
