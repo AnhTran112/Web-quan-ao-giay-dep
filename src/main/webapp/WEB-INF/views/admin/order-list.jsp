@@ -6,7 +6,7 @@
     <thead class="table-light">
         <tr>
             <th>ID</th><th>Khách hàng</th><th>SĐT</th><th>Địa chỉ</th>
-            <th>Tổng tiền</th><th>Trạng thái</th><th>Hành động</th>
+            <th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái</th><th>Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -16,7 +16,8 @@
                 <td>${o.customerName}</td>
                 <td>${o.phone}</td>
                 <td>${o.address}</td>
-                <td><fmt:formatNumber value="${o.totalAmount}" type="number"/> đ</td>
+                <td>${o.createdAt}</td>
+                <td class="fw-bold text-danger"><fmt:formatNumber value="${o.totalAmount}" type="number"/> đ</td>
                 <td>
                     <c:choose>
                         <c:when test="${o.status == 'DELIVERED'}">
@@ -38,7 +39,7 @@
             </tr>
         </c:forEach>
         <c:if test="${empty orders}">
-            <tr><td colspan="7" class="text-center text-muted">Chưa có đơn hàng</td></tr>
+            <tr><td colspan="8" class="text-center text-muted">Chưa có đơn hàng</td></tr>
         </c:if>
     </tbody>
 </table>
