@@ -24,6 +24,7 @@
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/track-order">Tra cứu đơn hàng</a></li>
             </ul>
             <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light mt-2 mt-lg-0 position-relative">
                 Giỏ hàng

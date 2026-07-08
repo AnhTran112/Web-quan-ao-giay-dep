@@ -67,10 +67,15 @@
 |-----|------|-------|
 | id | INT, PK, AUTO_INCREMENT | Khóa chính |
 | customer_name | VARCHAR(150) | Tên khách hàng |
-| phone | VARCHAR(20) | Số điện thoại |
+| phone | VARCHAR(20) | Số điện thoại (dùng tra cứu đơn) |
 | address | VARCHAR(255) | Địa chỉ giao hàng |
-| total_amount | DECIMAL(12,0) | Tổng tiền |
-| status | VARCHAR(30) | Trạng thái: PENDING / DELIVERED |
+| note | VARCHAR(500) | Ghi chú của khách khi đặt |
+| admin_note | VARCHAR(500) | Ghi chú nội bộ của admin |
+| total_amount | DECIMAL(12,0) | Tổng cuối = tạm tính − giảm giá + phí ship |
+| ship_fee | DECIMAL(12,0) | Phí vận chuyển (0 nếu freeship, đơn từ 500k) |
+| coupon_code | VARCHAR(50) | Mã giảm giá đã áp (nếu có) |
+| discount_amount | DECIMAL(12,0) | Số tiền được giảm từ coupon |
+| status | VARCHAR(30) | PENDING → CONFIRMED → SHIPPING → DELIVERED, hoặc CANCELLED |
 | created_at | DATETIME | Ngày đặt |
 
 ### 4. `order_items` — Chi tiết đơn hàng
@@ -79,8 +84,31 @@
 | id | INT, PK, AUTO_INCREMENT | Khóa chính |
 | order_id | INT, FK → orders(id) | Thuộc đơn hàng nào |
 | product_id | INT, FK → products(id) | Sản phẩm nào |
+| variant_id | INT, NULL | Phân loại khách chọn (NULL nếu không có) |
+| variant_name | VARCHAR(150), NULL | Tên phân loại tại thời điểm mua (vd "Size 40") |
 | quantity | INT | Số lượng mua |
-| price | DECIMAL(12,0) | Giá tại thời điểm mua |
+| price | DECIMAL(12,0) | Giá tại thời điểm mua (đã áp giảm giá %) |
+
+### 4b. `order_status_history` — Lịch sử trạng thái đơn
+| Cột | Kiểu | Mô tả |
+|-----|------|-------|
+| id | INT, PK, AUTO_INCREMENT | Khóa chính |
+| order_id | INT, FK → orders(id) | Đơn hàng nào |
+| old_status | VARCHAR(30), NULL | Trạng thái cũ (NULL với bản ghi tạo đơn) |
+| new_status | VARCHAR(30) | Trạng thái mới |
+| changed_by | VARCHAR(100) | 'customer' hoặc username admin |
+| created_at | DATETIME | Thời điểm đổi |
+
+### 4c. `coupons` — Mã giảm giá
+| Cột | Kiểu | Mô tả |
+|-----|------|-------|
+| id | INT, PK, AUTO_INCREMENT | Khóa chính |
+| code | VARCHAR(50), UNIQUE | Mã khách nhập (vd SALE10) |
+| discount_percent | INT | % giảm trên tạm tính |
+| max_uses | INT | Số lượt dùng tối đa |
+| used_count | INT | Đã dùng bao nhiêu lượt (trừ trong transaction đặt hàng) |
+| expires_at | DATETIME, NULL | Hạn dùng (NULL = không hết hạn) |
+| active | TINYINT(1) | Bật/tắt mã |
 
 ### 5. `users` — Tài khoản quản trị
 | Cột | Kiểu | Mô tả |
