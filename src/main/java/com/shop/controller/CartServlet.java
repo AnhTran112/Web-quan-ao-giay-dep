@@ -27,7 +27,7 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, javax.servlet.ServletException {
-        
+
         String action = req.getParameter("action");
         if ("remove".equals(action)) {
             handleRemove(req, resp);
@@ -40,7 +40,7 @@ public class CartServlet extends HttpServlet {
         for (CartItem item : cart) {
             total = total.add(item.getSubtotal());
         }
-        
+
         req.setAttribute("cart", cart);
         req.setAttribute("total", total);
         req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
@@ -50,13 +50,21 @@ public class CartServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, javax.servlet.ServletException {
         String action = req.getParameter("action");
-        
-        if ("add".equals(action)) {
-            handleAdd(req, resp);
-        } else if ("update".equals(action)) {
-            handleUpdate(req, resp);
-        } else {
-            doGet(req, resp);
+
+        if (action == null) {
+            action = "";
+        }
+
+        switch (action) {
+            case "add":
+                handleAdd(req, resp);
+                break;
+            case "update":
+                handleUpdate(req, resp);
+                break;
+            default:
+                doGet(req, resp);
+                break;
         }
     }
 
@@ -67,7 +75,7 @@ public class CartServlet extends HttpServlet {
 
         String rawCookie = getRawCookie(req);
         List<String> items = parseRawCookie(rawCookie);
-        
+
         boolean found = false;
         String matchPrefix = productId + ":" + variantId + ":";
         for (int i = 0; i < items.size(); i++) {
@@ -81,11 +89,11 @@ public class CartServlet extends HttpServlet {
                 }
             }
         }
-        
+
         if (!found) {
             items.add(productId + ":" + variantId + ":" + quantity);
         }
-        
+
         saveCookie(resp, items);
         resp.sendRedirect(req.getContextPath() + "/cart");
     }
@@ -97,7 +105,7 @@ public class CartServlet extends HttpServlet {
 
         String rawCookie = getRawCookie(req);
         List<String> items = parseRawCookie(rawCookie);
-        
+
         String matchPrefix = productId + ":" + variantId + ":";
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).startsWith(matchPrefix)) {
@@ -109,7 +117,7 @@ public class CartServlet extends HttpServlet {
                 break;
             }
         }
-        
+
         saveCookie(resp, items);
         resp.sendRedirect(req.getContextPath() + "/cart");
     }
@@ -120,10 +128,10 @@ public class CartServlet extends HttpServlet {
 
         String rawCookie = getRawCookie(req);
         List<String> items = parseRawCookie(rawCookie);
-        
+
         String matchPrefix = productId + ":" + variantId + ":";
         items.removeIf(item -> item.startsWith(matchPrefix));
-        
+
         saveCookie(resp, items);
         resp.sendRedirect(req.getContextPath() + "/cart");
     }
@@ -143,13 +151,15 @@ public class CartServlet extends HttpServlet {
         }
         return "";
     }
-    
+
     private List<String> parseRawCookie(String raw) {
         List<String> list = new ArrayList<>();
-        if (raw == null || raw.trim().isEmpty()) return list;
+        if (raw == null || raw.trim().isEmpty())
+            return list;
         String[] parts = raw.split(",");
         for (String p : parts) {
-            if (!p.trim().isEmpty()) list.add(p.trim());
+            if (!p.trim().isEmpty())
+                list.add(p.trim());
         }
         return list;
     }
@@ -170,20 +180,20 @@ public class CartServlet extends HttpServlet {
         List<CartItem> cart = new ArrayList<>();
         String rawCookie = getRawCookie(req);
         List<String> items = parseRawCookie(rawCookie);
-        
+
         for (String itemStr : items) {
             String[] parts = itemStr.split(":");
             if (parts.length == 3) {
                 int pId = parseInt(parts[0], 0);
                 int vId = parseInt(parts[1], 0);
                 int qty = parseInt(parts[2], 0);
-                
+
                 Product p = productDAO.getById(pId);
                 if (p != null) {
                     BigDecimal price = p.getPrice();
                     String variantName = null;
                     Integer variantIdObj = null;
-                    
+
                     if (vId > 0 && p.getVariants() != null) {
                         for (ProductVariant v : p.getVariants()) {
                             if (v.getId() == vId) {
@@ -194,13 +204,14 @@ public class CartServlet extends HttpServlet {
                             }
                         }
                     }
-                    
+
                     // Apply discount
                     if (p.getDiscountPercent() > 0) {
-                        BigDecimal discountMulti = BigDecimal.valueOf(100 - p.getDiscountPercent()).divide(BigDecimal.valueOf(100));
+                        BigDecimal discountMulti = BigDecimal.valueOf(100 - p.getDiscountPercent())
+                                .divide(BigDecimal.valueOf(100));
                         price = price.multiply(discountMulti);
                     }
-                    
+
                     CartItem ci = new CartItem(pId, variantIdObj, p.getName(), variantName, price, p.getImage(), qty);
                     cart.add(ci);
                 }
