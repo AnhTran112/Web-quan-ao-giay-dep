@@ -11,8 +11,8 @@ import java.io.IOException;
  * Quan ly don hang (admin). URL: "/admin/orders"
  *
  * NGUOI PHU TRACH: Nguoi 3 (Khoa).
- * doGet da goi orderDAO.getAll() (chay duoc khi Khoa hoan thien OrderDAO).
- * TODO: doPost doi trang thai don -> "Da giao".
+ *   doGet  : lay tat ca don hang, hien thi order-list.jsp.
+ *   doPost : doi trang thai don hang thanh "DELIVERED".
  */
 @WebServlet("/admin/orders")
 public class AdminOrderServlet extends HttpServlet {
@@ -29,7 +29,11 @@ public class AdminOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // TODO (Khoa): int id = ...; orderDAO.updateStatus(id, "DELIVERED");
+        // Doc id don hang tu form
+        int id = Integer.parseInt(req.getParameter("id"));
+        // Doi trang thai thanh "Da giao"
+        orderDAO.updateStatus(id, "DELIVERED");
+        // Quay lai danh sach don hang
         resp.sendRedirect(req.getContextPath() + "/admin/orders");
     }
 }
