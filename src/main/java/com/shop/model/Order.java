@@ -9,10 +9,16 @@ public class Order {
     private String customerName;
     private String phone;
     private String address;
-    private BigDecimal totalAmount;
-    private String status;       // PENDING / DELIVERED
+    private String note;            // ghi chu cua khach khi dat
+    private String adminNote;       // ghi chu noi bo cua admin
+    private BigDecimal totalAmount; // tong cuoi = tam tinh - giam gia + phi ship
+    private BigDecimal shipFee;
+    private String couponCode;
+    private BigDecimal discountAmount;
+    private String status;          // xem OrderStatus
     private String createdAt;
-    private List<OrderItem> items;  // chi tiet don hang
+    private List<OrderItem> items;             // chi tiet don hang
+    private List<OrderStatusHistory> history;  // lich su trang thai
 
     public Order() {}
 
@@ -37,6 +43,35 @@ public class Order {
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
+
+    public String getAdminNote() { return adminNote; }
+    public void setAdminNote(String adminNote) { this.adminNote = adminNote; }
+
+    public BigDecimal getShipFee() { return shipFee; }
+    public void setShipFee(BigDecimal shipFee) { this.shipFee = shipFee; }
+
+    public String getCouponCode() { return couponCode; }
+    public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
+
+    public BigDecimal getDiscountAmount() { return discountAmount; }
+    public void setDiscountAmount(BigDecimal discountAmount) { this.discountAmount = discountAmount; }
+
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
+
+    public List<OrderStatusHistory> getHistory() { return history; }
+    public void setHistory(List<OrderStatusHistory> history) { this.history = history; }
+
+    /** Tam tinh (tong tien hang) = tong cuoi + giam gia - phi ship. */
+    public BigDecimal getSubtotal() {
+        BigDecimal sub = totalAmount != null ? totalAmount : BigDecimal.ZERO;
+        if (discountAmount != null) sub = sub.add(discountAmount);
+        if (shipFee != null) sub = sub.subtract(shipFee);
+        return sub;
+    }
+
+    /** Nhan tieng Viet cua trang thai (tien cho JSP). */
+    public String getStatusLabel() { return OrderStatus.label(status); }
 }
