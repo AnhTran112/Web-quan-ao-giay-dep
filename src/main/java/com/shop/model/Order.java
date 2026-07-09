@@ -6,6 +6,7 @@ import java.util.List;
 /** Model: don hang. */
 public class Order {
     private int id;
+    private Integer userId; // Integer to allow null
     private String customerName;
     private String phone;
     private String address;
@@ -24,6 +25,9 @@ public class Order {
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public Integer getUserId() { return userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
 
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }

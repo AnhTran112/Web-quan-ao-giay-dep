@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:include page="common/header.jsp" />
+<%@ include file="admin-header.jsp" %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3>Nhật ký hoạt động (Audit Log)</h3>
@@ -40,4 +40,4 @@
     </div>
 </div>
 
-<jsp:include page="common/footer.jsp" />
+<%@ include file="admin-footer.jsp" %>

@@ -28,6 +28,27 @@
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/wishlist">Yêu thích <span id="wishlistBadge" class="badge bg-danger ms-1" style="display:none;">0</span></a></li>
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/track-order">Tra cứu đơn hàng</a></li>
             </ul>
+            <ul class="navbar-nav ms-3 me-3">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.loggedInUser}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Chào, ${sessionScope.loggedInUser.fullName}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/account">Tài khoản của tôi</a></li>
+                                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/account?tab=orders">Lịch sử mua hàng</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/logout">Đăng xuất</a></li>
+                            </ul>
+                        </li>
+                    </c:when>
+                    <c:otherwise>
+                        <li class="nav-item"><a class="nav-link text-white" href="${pageContext.request.contextPath}/login">Đăng nhập</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="${pageContext.request.contextPath}/register">Đăng ký</a></li>
+                    </c:otherwise>
+                </c:choose>
+            </ul>
             <a href="${pageContext.request.contextPath}/cart" class="btn btn-outline-light mt-2 mt-lg-0 position-relative">
                 Giỏ hàng
                 <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">

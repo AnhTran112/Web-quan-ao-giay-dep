@@ -88,7 +88,9 @@ public class AdminOrderServlet extends HttpServlet {
             case "status": {
                 String newStatus = trim(req.getParameter("status"));
                 try {
-                    orderDAO.updateStatus(id, newStatus, currentAdminName(req));
+                    String adminName = currentAdminName(req);
+                    orderDAO.updateStatus(id, newStatus, adminName);
+                    com.shop.dao.ActivityLogDAO.log(adminName, "UPDATE", "ORDER", id, "Chuyển trạng thái đơn thành: " + OrderStatus.label(newStatus));
                     resp.sendRedirect(detailUrl + "&msg=" + encode("Đã chuyển đơn sang \""
                             + OrderStatus.label(newStatus) + "\"."));
                 } catch (OrderDAO.OrderException e) {
@@ -99,6 +101,8 @@ public class AdminOrderServlet extends HttpServlet {
             case "note": {
                 String note = trim(req.getParameter("adminNote"));
                 orderDAO.updateAdminNote(id, note.isEmpty() ? null : note);
+                String adminName = currentAdminName(req);
+                com.shop.dao.ActivityLogDAO.log(adminName, "UPDATE", "ORDER", id, "Cập nhật ghi chú admin");
                 resp.sendRedirect(detailUrl + "&msg=" + encode("Đã lưu ghi chú."));
                 break;
             }
@@ -114,6 +118,10 @@ public class AdminOrderServlet extends HttpServlet {
         Object admin = req.getSession().getAttribute("admin");
         if (admin instanceof User) {
             return ((User) admin).getUsername();
+        }
+        Object loggedInUser = req.getSession().getAttribute("loggedInUser");
+        if (loggedInUser instanceof User) {
+            return ((User) loggedInUser).getUsername();
         }
         return "admin";
     }

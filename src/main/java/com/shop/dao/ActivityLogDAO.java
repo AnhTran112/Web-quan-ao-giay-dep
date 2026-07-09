@@ -12,13 +12,19 @@ import java.util.List;
 
 public class ActivityLogDAO {
 
-    public static void log(String adminUsername, String action, String details) {
-        String sql = "INSERT INTO activity_logs (admin_username, action, details) VALUES (?, ?, ?)";
+    public static void log(String adminUsername, String action, String entity, Integer entityId, String description) {
+        String sql = "INSERT INTO activity_logs (admin_username, action, entity, entity_id, description) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, adminUsername);
             ps.setString(2, action);
-            ps.setString(3, details);
+            ps.setString(3, entity);
+            if (entityId != null) {
+                ps.setInt(4, entityId);
+            } else {
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
+            ps.setString(5, description);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,7 +42,14 @@ public class ActivityLogDAO {
                 log.setId(rs.getInt("id"));
                 log.setAdminUsername(rs.getString("admin_username"));
                 log.setAction(rs.getString("action"));
-                log.setDetails(rs.getString("details"));
+                
+                // Set details = entity + entity_id + description for backward compatibility with JSP
+                String entity = rs.getString("entity");
+                int entityId = rs.getInt("entity_id");
+                String desc = rs.getString("description");
+                String details = entity + (entityId > 0 ? " #" + entityId : "") + " - " + desc;
+                
+                log.setDetails(details);
                 log.setCreatedAt(rs.getTimestamp("created_at"));
                 list.add(log);
             }

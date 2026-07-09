@@ -25,7 +25,7 @@
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Tên sản phẩm</label>
-                    <input type="text" name="name" class="form-control" value="${product.name}" required>
+                    <input type="text" name="name" class="form-control" value="<c:out value='${product.name}'/>" required>
                 </div>
 
                 <div class="row g-3">
@@ -55,7 +55,7 @@
 
                 <div class="mt-3">
                     <label class="form-label fw-semibold">Mô tả</label>
-                    <textarea name="description" class="form-control" rows="4">${product.description}</textarea>
+                    <textarea name="description" class="form-control" rows="4"><c:out value="${product.description}"/></textarea>
                 </div>
             </div>
 
@@ -78,7 +78,7 @@
                         <tbody>
                             <c:forEach var="v" items="${product.variants}">
                                 <tr>
-                                    <td><input type="text" name="variantName" class="form-control" value="${v.name}" placeholder="VD: Size 40, Màu Đỏ..."></td>
+                                    <td><input type="text" name="variantName" class="form-control" value="<c:out value='${v.name}'/>" placeholder="VD: Size 40, Màu Đỏ..."></td>
                                     <td><input type="number" name="variantPrice" class="form-control" value="${v.price}" min="0"></td>
                                     <td><input type="number" name="variantQty" class="form-control" value="${v.quantity}" min="0"></td>
                                     <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVariantRow(this)">×</button></td>
