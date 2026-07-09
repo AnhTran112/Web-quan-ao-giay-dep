@@ -26,7 +26,6 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
                 <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/wishlist">Yêu thích <span id="wishlistBadge" class="badge bg-danger ms-1" style="display:none;">0</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/track-order">Tra cứu đơn hàng</a></li>
             </ul>
             <ul class="navbar-nav ms-3 me-3">
                 <c:choose>
@@ -108,31 +107,42 @@
         });
     }
 
-    // --- AJAX Wishlist (Cookie) ---
+    // --- AJAX Wishlist (Database) ---
     function toggleWishlist(productId) {
-        let wl = getCookie("wishlist");
-        let items = wl ? wl.split(",") : [];
-        let index = items.indexOf(productId.toString());
-        if (index > -1) {
-            items.splice(index, 1);
-            showToast('Đã bỏ yêu thích!');
-        } else {
-            items.push(productId);
-            showToast('Đã thêm vào yêu thích!');
-        }
-        document.cookie = "wishlist=" + items.join(",") + "; max-age=" + (60*60*24*30) + "; path=/";
-        updateWishlistBadge();
+        fetch('${pageContext.request.contextPath}/api/wishlist/toggle', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'productId=' + productId
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error === 'not_logged_in') {
+                window.location.href = '${pageContext.request.contextPath}/login?error=' + encodeURIComponent('Vui lòng đăng nhập để sử dụng tính năng yêu thích!');
+            } else if (data.success) {
+                if (data.action === 'added') {
+                    showToast('Đã thêm vào yêu thích!');
+                } else {
+                    showToast('Đã bỏ yêu thích!');
+                }
+                updateWishlistBadge();
+            } else {
+                showToast('Có lỗi xảy ra', true);
+            }
+        });
     }
+
     function updateWishlistBadge() {
-        let wl = getCookie("wishlist");
-        let items = wl ? wl.split(",").filter(x => x !== "") : [];
-        let badge = document.getElementById("wishlistBadge");
-        if(items.length > 0) {
-            badge.innerText = items.length;
-            badge.style.display = "inline-block";
-        } else {
-            badge.style.display = "none";
-        }
+        fetch('${pageContext.request.contextPath}/api/wishlist/count')
+            .then(res => res.json())
+            .then(data => {
+                let badge = document.getElementById("wishlistBadge");
+                if (data.count > 0) {
+                    badge.innerText = data.count;
+                    badge.style.display = "inline-block";
+                } else {
+                    badge.style.display = "none";
+                }
+            });
     }
     function getCookie(name) {
         let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));

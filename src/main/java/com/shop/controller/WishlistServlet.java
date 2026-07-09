@@ -1,41 +1,29 @@
 package com.shop.controller;
 
-import com.shop.dao.ProductDAO;
+import com.shop.dao.WishlistDAO;
 import com.shop.model.Product;
+import com.shop.model.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/wishlist")
 public class WishlistServlet extends HttpServlet {
-    private final ProductDAO productDAO = new ProductDAO();
+    private final WishlistDAO wishlistDAO = new WishlistDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Product> wishlist = new ArrayList<>();
-        String val = "";
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (Cookie c : cookies) {
-                if ("wishlist".equals(c.getName())) {
-                    try { val = URLDecoder.decode(c.getValue(), "UTF-8"); } catch (Exception ignored) {}
-                    break;
-                }
-            }
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            resp.sendRedirect(req.getContextPath() + "/login?error=Lỗi: Vui lòng đăng nhập để xem danh sách yêu thích");
+            return;
         }
-        
-        String[] parts = val.split(",");
-        for (String pId : parts) {
-            if (!pId.trim().isEmpty()) {
-                Product p = productDAO.getById(Integer.parseInt(pId.trim()));
-                if (p != null) wishlist.add(p);
-            }
-        }
+
+        User user = (User) session.getAttribute("loggedInUser");
+        List<Product> wishlist = wishlistDAO.getByUserId(user.getId());
         
         req.setAttribute("wishlist", wishlist);
         req.getRequestDispatcher("/WEB-INF/views/wishlist.jsp").forward(req, resp);

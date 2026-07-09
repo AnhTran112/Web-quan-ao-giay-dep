@@ -1,6 +1,7 @@
 package com.shop.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Model: 1 dong trong gio hang.
@@ -14,6 +15,7 @@ public class CartItem {
     private BigDecimal price;
     private String image;
     private int quantity;
+    private List<ProductVariant> productVariants;
 
     public CartItem() {}
 
@@ -52,4 +54,7 @@ public class CartItem {
 
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public List<ProductVariant> getProductVariants() { return productVariants; }
+    public void setProductVariants(List<ProductVariant> productVariants) { this.productVariants = productVariants; }
 }

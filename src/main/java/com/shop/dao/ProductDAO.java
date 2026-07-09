@@ -51,7 +51,7 @@ public class ProductDAO {
     /** Loc san pham theo danh muc va khoang gia, sap xep. */
     public List<Product> filter(Integer categoryId, Long minPrice, Long maxPrice, String keyword, String sort) {
         List<Product> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT p.* FROM products p LEFT JOIN (SELECT product_id, SUM(quantity) as total_sold FROM order_items GROUP BY product_id) oi ON p.id = oi.product_id WHERE 1=1");
         List<Object> params = new ArrayList<>();
         if (categoryId != null){
             sql.append(" AND category_id = ?");
@@ -78,9 +78,7 @@ public class ProductDAO {
                 sql.append(" ORDER BY price DESC");
                 break;
             case "best_selling":
-                // Tạm thời sắp xếp theo views vì chưa join với order_items để lấy best selling thật.
-                // Nếu cần best selling thật, cần query phức tạp hơn.
-                sql.append(" ORDER BY views DESC");
+                sql.append(" ORDER BY oi.total_sold DESC, p.id DESC");
                 break;
             case "newest":
             default:

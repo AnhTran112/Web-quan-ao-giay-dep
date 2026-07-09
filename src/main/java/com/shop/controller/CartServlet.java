@@ -69,6 +69,9 @@ public class CartServlet extends HttpServlet {
             case "update":
                 handleUpdate(req, resp);
                 break;
+            case "updateSize":
+                handleUpdateSize(req, resp);
+                break;
             default:
                 doGet(req, resp);
                 break;
@@ -173,6 +176,48 @@ public class CartServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/cart");
     }
 
+    private void handleUpdateSize(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int productId = parseInt(req.getParameter("productId"), 0);
+        int oldVariantId = parseInt(req.getParameter("oldVariantId"), 0);
+        int newVariantId = parseInt(req.getParameter("newVariantId"), 0);
+
+        String rawCookie = getRawCookie(req);
+        List<String> items = parseRawCookie(rawCookie);
+
+        String oldPrefix = productId + ":" + oldVariantId + ":";
+        String newPrefix = productId + ":" + newVariantId + ":";
+
+        int oldVariantIndex = -1;
+        int existingNewVariantIndex = -1;
+        int oldQty = 0;
+
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).startsWith(oldPrefix)) {
+                oldVariantIndex = i;
+                String[] parts = items.get(i).split(":");
+                if (parts.length == 3) oldQty = parseInt(parts[2], 0);
+            } else if (items.get(i).startsWith(newPrefix)) {
+                existingNewVariantIndex = i;
+            }
+        }
+
+        if (oldVariantIndex != -1 && oldVariantId != newVariantId) {
+            if (existingNewVariantIndex != -1) {
+                // Merge into existing new variant
+                String[] parts = items.get(existingNewVariantIndex).split(":");
+                int existingQty = parts.length == 3 ? parseInt(parts[2], 0) : 0;
+                items.set(existingNewVariantIndex, newPrefix + (existingQty + oldQty));
+                items.remove(oldVariantIndex);
+            } else {
+                // Just change variant ID
+                items.set(oldVariantIndex, newPrefix + oldQty);
+            }
+        }
+
+        saveCookie(resp, items);
+        resp.sendRedirect(req.getContextPath() + "/cart");
+    }
+
     private void handleRemove(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int productId = parseInt(req.getParameter("productId"), 0);
         int variantId = parseInt(req.getParameter("variantId"), 0);
@@ -264,6 +309,7 @@ public class CartServlet extends HttpServlet {
                     }
 
                     CartItem ci = new CartItem(pId, variantIdObj, p.getName(), variantName, price, p.getImage(), qty);
+                    ci.setProductVariants(p.getVariants());
                     cart.add(ci);
                 }
             }

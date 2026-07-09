@@ -12,10 +12,7 @@
         </p>
     </c:if>
     <p class="lead mt-3">Cảm ơn bạn đã mua hàng. Chúng tôi sẽ gọi điện xác nhận trong thời gian sớm nhất.</p>
-    <p class="text-muted">Bạn có thể theo dõi tình trạng đơn bằng số điện thoại đã đặt hàng.</p>
     <div class="mt-3">
-        <a href="${pageContext.request.contextPath}/track-order<c:if test='${not empty customerPhone}'>?phone=<c:out value="${customerPhone}"/></c:if>"
-           class="btn btn-outline-primary me-2">Tra cứu đơn hàng</a>
         <a href="${pageContext.request.contextPath}/home" class="btn btn-primary">Tiếp tục mua sắm</a>
     </div>
 </div>
