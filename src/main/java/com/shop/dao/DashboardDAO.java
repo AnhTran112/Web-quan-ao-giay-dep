@@ -197,7 +197,8 @@ public class DashboardDAO {
             }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    labels.add("'" + rs.getString("name") + "'");
+                    // Escape ten danh muc de dau ' hoac </script> khong lam vo mang JS tren dashboard
+                    labels.add("'" + escapeJs(rs.getString("name")) + "'");
                     data.add(rs.getDouble("revenue"));
                 }
             }
@@ -208,6 +209,26 @@ public class DashboardDAO {
         result.put("labels", labels.toString());
         result.put("data", data.toString());
         return result;
+    }
+
+    /** Escape chuoi de nhung an toan vao literal JS trong the &lt;script&gt;. */
+    private static String escapeJs(String s) {
+        if (s == null) return "";
+        StringBuilder sb = new StringBuilder(s.length() + 8);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;
+                case '\'': sb.append("\\'"); break;
+                case '"':  sb.append("\\\""); break;
+                case '<':  sb.append("\\u003C"); break;
+                case '>':  sb.append("\\u003E"); break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                default:   sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     public List<Map<String, Object>> getLatestOrders(int limit) {

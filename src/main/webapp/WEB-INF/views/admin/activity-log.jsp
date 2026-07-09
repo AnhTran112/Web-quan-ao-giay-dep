@@ -25,9 +25,9 @@
                     <tr>
                         <td>#${log.id}</td>
                         <td><fmt:formatDate value="${log.createdAt}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
-                        <td><strong>${log.adminUsername}</strong></td>
-                        <td><span class="badge bg-info text-dark">${log.action}</span></td>
-                        <td>${log.details}</td>
+                        <td><strong><c:out value="${log.adminUsername}"/></strong></td>
+                        <td><span class="badge bg-info text-dark"><c:out value="${log.action}"/></span></td>
+                        <td><c:out value="${log.details}"/></td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty logs}">

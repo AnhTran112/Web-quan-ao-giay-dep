@@ -46,7 +46,7 @@
                             <div class="row mb-3 align-items-center">
                                 <div class="col-md-3 text-md-end"><label class="form-label mb-0">Tên đăng nhập</label></div>
                                 <div class="col-md-7">
-                                    <input type="text" class="form-control-plaintext fw-bold" value="${sessionScope.loggedInUser.username}" readonly>
+                                    <input type="text" class="form-control-plaintext fw-bold" value="<c:out value='${sessionScope.loggedInUser.username}'/>" readonly>
                                 </div>
                             </div>
                             <div class="row mb-3 align-items-center">

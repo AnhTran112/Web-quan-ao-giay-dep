@@ -26,11 +26,13 @@ public class ChangePasswordServlet extends HttpServlet {
         }
 
         boolean isAdmin = "ADMIN".equals(loggedInUser.getRole()) || "STAFF".equals(loggedInUser.getRole());
-        String jspPath = isAdmin ? "/WEB-INF/views/admin/change-password.jsp" : "/WEB-INF/views/change-password.jsp";
-        String postUrl = isAdmin ? "/admin/change-password" : "/change-password";
-        req.setAttribute("postUrl", req.getContextPath() + postUrl);
-
-        req.getRequestDispatcher(jspPath).forward(req, resp);
+        if (!isAdmin) {
+            // Khach doi mat khau ngay trong trang tai khoan (khong co JSP rieng)
+            resp.sendRedirect(req.getContextPath() + "/account?tab=password");
+            return;
+        }
+        req.setAttribute("postUrl", req.getContextPath() + "/admin/change-password");
+        req.getRequestDispatcher("/WEB-INF/views/admin/change-password.jsp").forward(req, resp);
     }
 
     @Override
@@ -54,6 +56,29 @@ public class ChangePasswordServlet extends HttpServlet {
         String oldPassword = req.getParameter("oldPassword");
         String newPassword = req.getParameter("newPassword");
         String confirmPassword = req.getParameter("confirmPassword");
+
+        // Chong NPE khi request thieu tham so
+        if (oldPassword == null || oldPassword.isEmpty()
+                || newPassword == null || newPassword.isEmpty()
+                || confirmPassword == null || confirmPassword.isEmpty()) {
+            if (isAdmin) {
+                req.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
+                req.getRequestDispatcher(jspPath).forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/account?tab=password&error=PasswordMismatch");
+            }
+            return;
+        }
+
+        if (newPassword.length() < 6) {
+            if (isAdmin) {
+                req.setAttribute("error", "Mật khẩu mới phải có ít nhất 6 ký tự!");
+                req.getRequestDispatcher(jspPath).forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/account?tab=password&error=PasswordMismatch");
+            }
+            return;
+        }
 
         if (!newPassword.equals(confirmPassword)) {
             if (isAdmin) {

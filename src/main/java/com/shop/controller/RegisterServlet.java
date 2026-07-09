@@ -28,6 +28,26 @@ public class RegisterServlet extends HttpServlet {
         String phone = req.getParameter("phone");
         String address = req.getParameter("address");
 
+        // Chuan hoa + kiem tra rong (chong NPE khi request thieu tham so, va bat validate phia server)
+        username = username == null ? "" : username.trim();
+        fullName = fullName == null ? "" : fullName.trim();
+        if (phone != null) phone = phone.trim();
+        if (address != null) address = address.trim();
+
+        if (username.isEmpty() || fullName.isEmpty()
+                || password == null || password.isEmpty()
+                || confirmPassword == null || confirmPassword.isEmpty()) {
+            req.setAttribute("error", "Vui lòng nhập đầy đủ tên đăng nhập, họ tên và mật khẩu!");
+            req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+            return;
+        }
+
+        if (password.length() < 6) {
+            req.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự!");
+            req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             req.setAttribute("error", "Mật khẩu xác nhận không khớp!");
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);

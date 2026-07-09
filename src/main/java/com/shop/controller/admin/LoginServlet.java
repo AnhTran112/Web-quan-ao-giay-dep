@@ -49,6 +49,13 @@ public class LoginServlet extends HttpServlet {
         String password = req.getParameter("password");
         String remember = req.getParameter("remember");
 
+        // Thieu tham so -> bao loi thay vi de BCrypt.checkpw nem NullPointerException
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            req.setAttribute("error", "Vui lòng nhập tài khoản và mật khẩu!");
+            req.getRequestDispatcher("/WEB-INF/views/admin/login.jsp").forward(req, resp);
+            return;
+        }
+
         User user = userDAO.findByUsername(username);
 
         if (user != null) {

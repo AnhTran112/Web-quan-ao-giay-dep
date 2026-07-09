@@ -166,6 +166,44 @@ public class UserDAO {
         return false;
     }
 
+    /** Dem so admin dang hoat dong (dung de chan xoa/ha quyen admin cuoi cung). */
+    public int countActiveAdmins() {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'ADMIN' AND status = 'ACTIVE'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /** Lay 1 user theo id (dung de kiem tra quyen truoc khi xoa/sua). */
+    public User findById(int userId) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("id"));
+                    u.setUsername(rs.getString("username"));
+                    u.setFullName(rs.getString("full_name"));
+                    u.setPhone(rs.getString("phone"));
+                    u.setAddress(rs.getString("address"));
+                    u.setRole(rs.getString("role"));
+                    u.setStatus(rs.getString("status"));
+                    return u;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();

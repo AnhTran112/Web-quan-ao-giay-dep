@@ -24,10 +24,23 @@ public class AdminUserServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = req.getParameter("action");
         if ("delete".equals(action)) {
-            int id = Integer.parseInt(req.getParameter("id"));
+            int id = parseId(req.getParameter("id"));
             User admin = getAdmin(req);
-            
-            // Xóa user
+            if (id <= 0) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=InvalidId");
+                return;
+            }
+            // Khong cho tu xoa chinh minh
+            if (admin != null && admin.getId() == id) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=CannotDeleteSelf");
+                return;
+            }
+            // Khong cho xoa admin cuoi cung (tranh khoa cung khu vuc admin)
+            User target = userDAO.findById(id);
+            if (target != null && "ADMIN".equals(target.getRole()) && userDAO.countActiveAdmins() <= 1) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=LastAdmin");
+                return;
+            }
             userDAO.deleteUser(id);
             if (admin != null) {
                 ActivityLogDAO.log(admin.getUsername(), "DELETE", "USER", id, "Xóa tài khoản ID " + id);
@@ -58,6 +71,15 @@ public class AdminUserServlet extends HttpServlet {
             String fullName = req.getParameter("fullName");
             String role = req.getParameter("role"); // ADMIN, STAFF, CUSTOMER
 
+            username = username == null ? "" : username.trim();
+            fullName = fullName == null ? "" : fullName.trim();
+
+            // Chan tao user thieu thong tin (tranh 500 do BCrypt.hashpw(null)) va role khong hop le
+            if (username.isEmpty() || password == null || password.isEmpty() || !isValidRole(role)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=InvalidInput");
+                return;
+            }
+
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPassword(password); // UserDAO tu dong BCrypt
@@ -73,9 +95,31 @@ public class AdminUserServlet extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/admin/users?error=UsernameExists");
             }
         } else if ("updateRoleStatus".equals(action)) {
-            int id = Integer.parseInt(req.getParameter("id"));
+            int id = parseId(req.getParameter("id"));
             String newRole = req.getParameter("role");
             String newStatus = req.getParameter("status"); // ACTIVE, LOCKED
+
+            // Kiem tra dau vao hop le
+            if (id <= 0 || !isValidRole(newRole) || !isValidStatus(newStatus)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=InvalidInput");
+                return;
+            }
+
+            // Khong cho tu ha quyen/khoa chinh minh
+            if (admin != null && admin.getId() == id
+                    && (!"ADMIN".equals(newRole) || !"ACTIVE".equals(newStatus))) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=CannotDemoteSelf");
+                return;
+            }
+
+            // Khong cho ha quyen/khoa admin cuoi cung
+            User target = userDAO.findById(id);
+            if (target != null && "ADMIN".equals(target.getRole())
+                    && (!"ADMIN".equals(newRole) || !"ACTIVE".equals(newStatus))
+                    && userDAO.countActiveAdmins() <= 1) {
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=LastAdmin");
+                return;
+            }
 
             userDAO.updateUserRoleAndStatus(id, newRole, newStatus);
             if (admin != null) {
@@ -89,5 +133,23 @@ public class AdminUserServlet extends HttpServlet {
         User u = (User) req.getSession().getAttribute("loggedInUser");
         if (u == null) u = (User) req.getSession().getAttribute("admin");
         return u;
+    }
+
+    /** Doc id an toan: tra ve -1 neu thieu hoac khong phai so. */
+    private int parseId(String raw) {
+        if (raw == null) return -1;
+        try {
+            return Integer.parseInt(raw.trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private boolean isValidRole(String role) {
+        return "ADMIN".equals(role) || "STAFF".equals(role) || "CUSTOMER".equals(role);
+    }
+
+    private boolean isValidStatus(String status) {
+        return "ACTIVE".equals(status) || "LOCKED".equals(status);
     }
 }
