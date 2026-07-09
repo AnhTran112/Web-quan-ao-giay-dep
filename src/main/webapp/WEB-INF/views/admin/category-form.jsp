@@ -8,11 +8,11 @@
 
     <div class="mb-3">
         <label class="form-label">Tên danh mục</label>
-        <input type="text" name="name" class="form-control" value="${category.name}" required>
+        <input type="text" name="name" class="form-control" value="<c:out value='${category.name}'/>" required>
     </div>
     <div class="mb-3">
         <label class="form-label">Mô tả</label>
-        <textarea name="description" class="form-control" rows="3">${category.description}</textarea>
+        <textarea name="description" class="form-control" rows="3"><c:out value="${category.description}"/></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Lưu</button>
     <a href="${pageContext.request.contextPath}/admin/categories" class="btn btn-secondary">Hủy</a>

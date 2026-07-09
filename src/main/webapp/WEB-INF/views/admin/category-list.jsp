@@ -6,7 +6,7 @@
 </div>
 
 <c:if test="${not empty error}">
-    <div class="alert alert-danger">${error}</div>
+    <div class="alert alert-danger"><c:out value="${error}"/></div>
 </c:if>
 
 <table class="table table-bordered table-hover align-middle">
@@ -19,8 +19,8 @@
         <c:forEach var="cat" items="${categories}">
             <tr>
                 <td>${cat.id}</td>
-                <td>${cat.name}</td>
-                <td>${cat.description}</td>
+                <td><c:out value="${cat.name}"/></td>
+                <td><c:out value="${cat.description}"/></td>
                 <td>
                     <a href="${pageContext.request.contextPath}/admin/categories?action=edit&id=${cat.id}"
                        class="btn btn-sm btn-primary">Sửa</a>

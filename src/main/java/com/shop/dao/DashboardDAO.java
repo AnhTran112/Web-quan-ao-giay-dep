@@ -115,4 +115,121 @@ public class DashboardDAO {
         result.put("data", data.toString());
         return result;
     }
+
+    public long getTotalRevenue(String fromDate, String toDate) {
+        StringBuilder sql = new StringBuilder("SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE status = 'DELIVERED'");
+        List<Object> params = new ArrayList<>();
+        if (fromDate != null && !fromDate.isEmpty()) {
+            sql.append(" AND created_at >= ?");
+            params.add(fromDate + " 00:00:00");
+        }
+        if (toDate != null && !toDate.isEmpty()) {
+            sql.append(" AND created_at <= ?");
+            params.add(toDate + " 23:59:59");
+        }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countOrders(String fromDate, String toDate) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM orders WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (fromDate != null && !fromDate.isEmpty()) {
+            sql.append(" AND created_at >= ?");
+            params.add(fromDate + " 00:00:00");
+        }
+        if (toDate != null && !toDate.isEmpty()) {
+            sql.append(" AND created_at <= ?");
+            params.add(toDate + " 23:59:59");
+        }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public Map<String, String> getRevenueByCategory(String fromDate, String toDate) {
+        Map<String, String> result = new HashMap<>();
+        List<String> labels = new ArrayList<>();
+        List<Double> data = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT c.name, SUM(oi.price * oi.quantity) AS revenue " +
+            "FROM order_items oi " +
+            "JOIN products p ON oi.product_id = p.id " +
+            "JOIN categories c ON p.category_id = c.id " +
+            "JOIN orders o ON oi.order_id = o.id " +
+            "WHERE o.status = 'DELIVERED'"
+        );
+        List<Object> params = new ArrayList<>();
+        if (fromDate != null && !fromDate.isEmpty()) {
+            sql.append(" AND o.created_at >= ?");
+            params.add(fromDate + " 00:00:00");
+        }
+        if (toDate != null && !toDate.isEmpty()) {
+            sql.append(" AND o.created_at <= ?");
+            params.add(toDate + " 23:59:59");
+        }
+        sql.append(" GROUP BY c.id, c.name");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    labels.add("'" + rs.getString("name") + "'");
+                    data.add(rs.getDouble("revenue"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        result.put("labels", labels.toString());
+        result.put("data", data.toString());
+        return result;
+    }
+
+    public List<Map<String, Object>> getLatestOrders(int limit) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT id, customer_name, total_amount, status, created_at FROM orders ORDER BY id DESC LIMIT ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", rs.getInt("id"));
+                    map.put("customer_name", rs.getString("customer_name"));
+                    map.put("total_amount", rs.getBigDecimal("total_amount"));
+                    map.put("status", rs.getString("status"));
+                    map.put("created_at", rs.getString("created_at"));
+                    list.add(map);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

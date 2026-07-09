@@ -121,7 +121,12 @@ public class CheckoutServlet extends HttpServlet {
         // ===== TINH TIEN PHIA SERVER (gia doc tu DB qua CartCookieHelper) =====
         Totals totals = computeTotals(req, cart);
 
+        com.shop.model.User loggedUser = (com.shop.model.User) req.getSession().getAttribute("loggedInUser");
+
         Order order = new Order();
+        if (loggedUser != null) {
+            order.setUserId(loggedUser.getId());
+        }
         order.setCustomerName(customerName);
         order.setPhone(phone);
         order.setAddress(address);

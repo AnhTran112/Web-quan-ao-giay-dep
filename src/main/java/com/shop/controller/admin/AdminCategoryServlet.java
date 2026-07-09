@@ -36,12 +36,18 @@ public class AdminCategoryServlet extends HttpServlet {
                 break;
             case "delete":
                 int delId = Integer.parseInt(req.getParameter("id"));
+                com.shop.model.Category delCat = categoryDAO.getById(delId);
                 boolean success = categoryDAO.delete(delId);
                 if (!success) {
                     req.setAttribute("error", "Lỗi: Không thể xóa danh mục này vì vẫn đang chứa sản phẩm!");
                     req.setAttribute("categories", categoryDAO.getAll());
                     req.getRequestDispatcher("/WEB-INF/views/admin/category-list.jsp").forward(req, resp);
                 } else {
+                    com.shop.model.User admin = (com.shop.model.User) req.getSession().getAttribute("admin");
+                    if (admin == null) admin = (com.shop.model.User) req.getSession().getAttribute("loggedInUser");
+                    if (admin != null && delCat != null) {
+                        com.shop.dao.ActivityLogDAO.log(admin.getUsername(), "DELETE", "CATEGORY", delId, "Xóa danh mục: " + delCat.getName());
+                    }
                     resp.sendRedirect(req.getContextPath() + "/admin/categories");
                 }
                 break;
@@ -63,11 +69,20 @@ public class AdminCategoryServlet extends HttpServlet {
         c.setName(name);
         c.setDescription(description);
         
+        com.shop.model.User admin = (com.shop.model.User) req.getSession().getAttribute("admin");
+        if (admin == null) admin = (com.shop.model.User) req.getSession().getAttribute("loggedInUser");
+        
         if (idStr == null || idStr.trim().isEmpty()) {
             categoryDAO.insert(c);
+            if (admin != null) {
+                com.shop.dao.ActivityLogDAO.log(admin.getUsername(), "CREATE", "CATEGORY", null, "Thêm danh mục mới: " + name);
+            }
         } else {
             c.setId(Integer.parseInt(idStr));
             categoryDAO.update(c);
+            if (admin != null) {
+                com.shop.dao.ActivityLogDAO.log(admin.getUsername(), "UPDATE", "CATEGORY", c.getId(), "Cập nhật danh mục: " + name);
+            }
         }
         
         resp.sendRedirect(req.getContextPath() + "/admin/categories");

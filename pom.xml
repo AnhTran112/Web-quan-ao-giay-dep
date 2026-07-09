@@ -76,20 +76,9 @@
                     </container>
                     <configuration>
                         <properties>
-                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.servlet.port>8081</cargo.servlet.port>
                         </properties>
                     </configuration>
-                    <deployables>
-                        <deployable>
-                            <groupId>com.shop</groupId>
-                            <artifactId>shop-jsp</artifactId>
-                            <type>war</type>
-                            <properties>
-                                <!-- duong dan: /shop  -> http://localhost:8080/shop -->
-                                <context>shop</context>
-                            </properties>
-                        </deployable>
-                    </deployables>
                 </configuration>
             </plugin>
         </plugins>

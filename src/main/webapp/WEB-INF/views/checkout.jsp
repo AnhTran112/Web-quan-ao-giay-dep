@@ -31,18 +31,18 @@
                         <label class="form-label fw-semibold">Họ và tên</label>
                         <input type="text" name="customerName" class="form-control"
                                placeholder="Nguyễn Văn A" required
-                               value="<c:out value='${param.customerName}'/>">
+                               value="<c:out value='${not empty param.customerName ? param.customerName : sessionScope.loggedInUser.fullName}'/>">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Số điện thoại</label>
                         <input type="text" name="phone" class="form-control"
                                placeholder="09xxxxxxxx" required
-                               value="<c:out value='${param.phone}'/>">
+                               value="<c:out value='${not empty param.phone ? param.phone : sessionScope.loggedInUser.phone}'/>">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Địa chỉ giao hàng chi tiết</label>
                         <textarea name="address" class="form-control" rows="3" required
-                                  placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"><c:out value="${param.address}"/></textarea>
+                                  placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"><c:out value="${not empty param.address ? param.address : sessionScope.loggedInUser.address}"/></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Ghi chú <span class="text-muted fw-normal">(không bắt buộc)</span></label>

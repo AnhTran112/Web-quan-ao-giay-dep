@@ -10,7 +10,7 @@
     <a href="${pageContext.request.contextPath}/home?categoryId=${product.categoryId}">
         ${not empty categoryName ? categoryName : 'Sản phẩm'}</a>
     <span class="crumb-sep">›</span>
-    <span class="text-muted">${product.name}</span>
+    <span class="text-muted"><c:out value="${product.name}"/></span>
 </nav>
 
 <!-- Khoi thong tin chinh: anh ben trai, thong tin + mua hang ben phai -->
@@ -19,7 +19,7 @@
         <div class="col-12 col-lg-5">
             <div class="detail-img-wrap mb-2">
                 <img id="mainProductImage" src="${pageContext.request.contextPath}/assets/images/${product.image}"
-                     alt="${product.name}"
+                     alt="<c:out value='${product.name}'/>"
                      onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
             </div>
             <%-- Gallery --%>
@@ -37,7 +37,7 @@
             </c:if>
         </div>
         <div class="col-12 col-lg-7">
-            <h3 class="fw-bold mb-1">${product.name}</h3>
+            <h3 class="fw-bold mb-1"><c:out value="${product.name}"/></h3>
 
             <div class="rating-row">
                 ${not empty categoryName ? categoryName : 'Sản phẩm'}
@@ -79,7 +79,7 @@
                             <button type="button" class="btn btn-outline-secondary variant-btn"
                                     data-id="${v.id}"
                                     data-price="${v.price * (100 - product.discountPercent) / 100}"
-                                    data-stock="${v.quantity}">${v.name}</button>
+                                    data-stock="${v.quantity}"><c:out value="${v.name}"/></button>
                         </c:forEach>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
 
 <!-- Mo ta san pham (kieu Shopee: mot khu rieng ben duoi) -->
 <h5 class="section-title">Mô tả sản phẩm</h5>
-<div class="desc-box mb-4"><c:choose><c:when test="${not empty product.description}">${product.description}</c:when><c:otherwise>Sản phẩm chính hãng, chất lượng đảm bảo. Hiện chưa có mô tả chi tiết cho sản phẩm này.</c:otherwise></c:choose></div>
+<div class="desc-box mb-4"><c:choose><c:when test="${not empty product.description}"><c:out value="${product.description}" escapeXml="false"/></c:when><c:otherwise>Sản phẩm chính hãng, chất lượng đảm bảo. Hiện chưa có mô tả chi tiết cho sản phẩm này.</c:otherwise></c:choose></div>
 
 <!-- Bang thong so -->
 <h5 class="section-title">Thông tin chi tiết</h5>
@@ -187,7 +187,7 @@
                                         </span>
                                     </div>
                                     <div class="small text-muted mb-1"><fmt:formatDate value="${rev.createdAt}" pattern="dd/MM/yyyy HH:mm"/></div>
-                                    <p class="mb-0 small">${rev.comment}</p>
+                                    <p class="mb-0 small"><c:out value="${rev.comment}"/></p>
                                 </div>
                             </c:forEach>
                         </c:otherwise>
@@ -207,7 +207,7 @@
                 <div class="card h-100">
                     <a href="${pageContext.request.contextPath}/product?id=${rp.id}"><img src="${pageContext.request.contextPath}/assets/images/${rp.image}" class="card-img-top" style="object-fit: cover; height: 150px;"></a>
                     <div class="card-body p-2 text-center">
-                        <a href="${pageContext.request.contextPath}/product?id=${rp.id}" class="text-decoration-none text-dark d-block text-truncate small">${rp.name}</a>
+                        <a href="${pageContext.request.contextPath}/product?id=${rp.id}" class="text-decoration-none text-dark d-block text-truncate small"><c:out value="${rp.name}"/></a>
                         <strong class="text-danger small"><fmt:formatNumber value="${rp.price}" type="number"/>đ</strong>
                     </div>
                 </div>
@@ -224,7 +224,7 @@
             <div class="card flex-shrink-0" style="width: 120px;">
                 <a href="${pageContext.request.contextPath}/product?id=${rv.id}"><img src="${pageContext.request.contextPath}/assets/images/${rv.image}" class="card-img-top" style="object-fit: cover; height: 120px;"></a>
                 <div class="card-body p-1 text-center">
-                    <a href="${pageContext.request.contextPath}/product?id=${rv.id}" class="text-decoration-none text-dark d-block text-truncate" style="font-size: 0.8rem;">${rv.name}</a>
+                    <a href="${pageContext.request.contextPath}/product?id=${rv.id}" class="text-decoration-none text-dark d-block text-truncate" style="font-size: 0.8rem;"><c:out value="${rv.name}"/></a>
                 </div>
             </div>
         </c:forEach>

@@ -60,7 +60,7 @@ public class AdminProductServlet extends HttpServlet {
                     deleteImageFile(deleting.getImage());
                     User admin = (User) req.getSession().getAttribute("admin");
                     if (admin != null) {
-                        ActivityLogDAO.log(admin.getUsername(), "Xóa sản phẩm", "Sản phẩm: " + deleting.getName() + " (ID: " + deleteId + ")");
+                        ActivityLogDAO.log(admin.getUsername(), "DELETE", "PRODUCT", deleteId, "Xóa sản phẩm: " + deleting.getName());
                     }
                 }
                 resp.sendRedirect(req.getContextPath() + "/admin/products");
@@ -83,6 +83,7 @@ public class AdminProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         // Doc du lieu tu form (de dang String de tu kiem tra truoc khi doi kieu)
         String idParam = req.getParameter("id");
         String name = req.getParameter("name");
@@ -193,12 +194,12 @@ public class AdminProductServlet extends HttpServlet {
         if (idParam == null || idParam.isEmpty()) {
             productDAO.insert(p);
             if (admin != null) {
-                ActivityLogDAO.log(admin.getUsername(), "Thêm sản phẩm", "Sản phẩm: " + p.getName());
+                ActivityLogDAO.log(admin.getUsername(), "CREATE", "PRODUCT", p.getId(), "Thêm sản phẩm mới: " + p.getName());
             }
         } else {
             productDAO.update(p);
             if (admin != null) {
-                ActivityLogDAO.log(admin.getUsername(), "Sửa sản phẩm", "Sản phẩm: " + p.getName() + " (ID: " + p.getId() + ")");
+                ActivityLogDAO.log(admin.getUsername(), "UPDATE", "PRODUCT", p.getId(), "Cập nhật sản phẩm: " + p.getName());
             }
             // Neu admin chon anh moi (ten file thay doi) thi xoa anh cu cho do rac
             if (oldImage != null && !oldImage.isEmpty() && !oldImage.equals(image)) {

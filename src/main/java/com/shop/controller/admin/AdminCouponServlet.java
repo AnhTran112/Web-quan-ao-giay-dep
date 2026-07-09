@@ -49,7 +49,16 @@ public class AdminCouponServlet extends HttpServlet {
                 break;
             }
             case "delete":
-                couponDAO.delete(parseInt(req.getParameter("id"), 0));
+                int delId = parseInt(req.getParameter("id"), 0);
+                Coupon delCoupon = couponDAO.getById(delId);
+                couponDAO.delete(delId);
+                
+                com.shop.model.User adminDel = (com.shop.model.User) req.getSession().getAttribute("admin");
+                if (adminDel == null) adminDel = (com.shop.model.User) req.getSession().getAttribute("loggedInUser");
+                if (adminDel != null && delCoupon != null) {
+                    com.shop.dao.ActivityLogDAO.log(adminDel.getUsername(), "DELETE", "COUPON", delId, "Xóa mã giảm giá: " + delCoupon.getCode());
+                }
+                
                 resp.sendRedirect(req.getContextPath() + "/admin/coupons?msg="
                         + URLEncoder.encode("Đã xóa mã giảm giá.", "UTF-8"));
                 break;
@@ -95,6 +104,16 @@ public class AdminCouponServlet extends HttpServlet {
         if (errors.isEmpty()) {
             boolean ok = (id == 0) ? couponDAO.insert(c) : couponDAO.update(c);
             if (ok) {
+                com.shop.model.User admin = (com.shop.model.User) req.getSession().getAttribute("admin");
+                if (admin == null) admin = (com.shop.model.User) req.getSession().getAttribute("loggedInUser");
+                if (admin != null) {
+                    if (id == 0) {
+                        com.shop.dao.ActivityLogDAO.log(admin.getUsername(), "CREATE", "COUPON", null, "Thêm mã giảm giá: " + code);
+                    } else {
+                        com.shop.dao.ActivityLogDAO.log(admin.getUsername(), "UPDATE", "COUPON", id, "Cập nhật mã giảm giá: " + code);
+                    }
+                }
+                
                 resp.sendRedirect(req.getContextPath() + "/admin/coupons?msg="
                         + URLEncoder.encode("Đã lưu mã \"" + code + "\".", "UTF-8"));
                 return;

@@ -36,9 +36,9 @@ public class OrderDAO {
      * @throws OrderException het hang / ma giam gia het hieu luc / loi he thong.
      */
     public int createOrder(Order order) throws OrderException {
-        String sqlOrder = "INSERT INTO orders(customer_name, phone, address, note, total_amount, "
+        String sqlOrder = "INSERT INTO orders(user_id, customer_name, phone, address, note, total_amount, "
                         + "ship_fee, coupon_code, discount_amount, status) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, '" + OrderStatus.PENDING + "')";
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '" + OrderStatus.PENDING + "')";
         String sqlItem  = "INSERT INTO order_items(order_id, product_id, variant_id, variant_name, quantity, price) "
                         + "VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -69,14 +69,19 @@ public class OrderDAO {
             // 3) Insert don hang
             int orderId = 0;
             try (PreparedStatement ps = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, order.getCustomerName());
-                ps.setString(2, order.getPhone());
-                ps.setString(3, order.getAddress());
-                ps.setString(4, order.getNote());
-                ps.setBigDecimal(5, order.getTotalAmount());
-                ps.setBigDecimal(6, order.getShipFee());
-                ps.setString(7, order.getCouponCode());
-                ps.setBigDecimal(8, order.getDiscountAmount());
+                if (order.getUserId() != null) {
+                    ps.setInt(1, order.getUserId());
+                } else {
+                    ps.setNull(1, Types.INTEGER);
+                }
+                ps.setString(2, order.getCustomerName());
+                ps.setString(3, order.getPhone());
+                ps.setString(4, order.getAddress());
+                ps.setString(5, order.getNote());
+                ps.setBigDecimal(6, order.getTotalAmount());
+                ps.setBigDecimal(7, order.getShipFee());
+                ps.setString(8, order.getCouponCode());
+                ps.setBigDecimal(9, order.getDiscountAmount());
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (keys.next()) orderId = keys.getInt(1);
@@ -413,6 +418,30 @@ public class OrderDAO {
             }
             for (Order o : list) {
                 o.setItems(loadItems(conn, o.getId()));
+                o.setHistory(loadHistory(conn, o.getId()));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Tra cuu don hang theo user_id (trang "Lịch sử đơn hàng" cua khach dang nhap).
+     */
+    public List<Order> getByUserId(int userId) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC";
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) list.add(mapOrderRow(rs));
+                }
+            }
+            for (Order o : list) {
+                o.setItems(loadItems(conn, o.getId()));
+                o.setHistory(loadHistory(conn, o.getId()));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -507,6 +536,8 @@ public class OrderDAO {
     private Order mapOrderRow(ResultSet rs) throws SQLException {
         Order o = new Order();
         o.setId(rs.getInt("id"));
+        int userId = rs.getInt("user_id");
+        o.setUserId(rs.wasNull() ? null : userId);
         o.setCustomerName(rs.getString("customer_name"));
         o.setPhone(rs.getString("phone"));
         o.setAddress(rs.getString("address"));

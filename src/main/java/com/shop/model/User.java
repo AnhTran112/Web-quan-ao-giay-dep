@@ -7,8 +7,16 @@ public class User {
     private String password;
     private String fullName;
     private String role;
+    private String phone;
+    private String address;
 
     public User() {}
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -24,4 +32,21 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    private String status;
+    private int failedAttempts;
+    private java.sql.Timestamp lockTime;
+    private String rememberToken;
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public int getFailedAttempts() { return failedAttempts; }
+    public void setFailedAttempts(int failedAttempts) { this.failedAttempts = failedAttempts; }
+
+    public java.sql.Timestamp getLockTime() { return lockTime; }
+    public void setLockTime(java.sql.Timestamp lockTime) { this.lockTime = lockTime; }
+
+    public String getRememberToken() { return rememberToken; }
+    public void setRememberToken(String rememberToken) { this.rememberToken = rememberToken; }
 }
