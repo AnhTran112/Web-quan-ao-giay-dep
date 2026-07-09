@@ -99,12 +99,12 @@
                 </div>
 
                 <div class="d-flex gap-2 flex-wrap product-actions">
-                    <button type="submit" class="btn btn-success btn-lg"
-                            <c:if test="${product.quantity == 0}">disabled</c:if>>
+                    <button type="submit" class="btn btn-success btn-lg" id="btnAddToCart"
+                            <c:if test="${product.quantity == 0 || product.hasVariants}">disabled</c:if>>
                         Thêm vào giỏ
                     </button>
-                    <button type="button" class="btn btn-buy-now btn-lg" onclick="buyNow()"
-                            <c:if test="${product.quantity == 0}">disabled</c:if>>
+                    <button type="button" class="btn btn-buy-now btn-lg" id="btnBuyNow" onclick="buyNow()"
+                            <c:if test="${product.quantity == 0 || product.hasVariants}">disabled</c:if>>
                         Mua ngay
                     </button>
                     <button type="button" class="btn btn-outline-danger btn-lg" onclick="toggleWishlist(${product.id})">
@@ -141,53 +141,98 @@
 </div>
 
 <!-- Đánh giá sản phẩm -->
-<h5 class="section-title">Đánh giá sản phẩm <c:if test="${not empty avgRating}"><span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> <fmt:formatNumber value="${avgRating}" maxFractionDigits="1"/> / 5</span></c:if></h5>
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6 border-end">
-                <h6 class="fw-bold mb-3">Gửi đánh giá của bạn</h6>
-                <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
-                    <input type="hidden" id="revProductId" value="${product.id}">
-                    <div class="mb-2">
-                        <label class="form-label small">Số điện thoại (đã dùng để mua hàng):</label>
-                        <input type="text" id="revPhone" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label small">Đánh giá (sao):</label>
-                        <select id="revRating" class="form-select form-select-sm">
-                            <option value="5">5 Sao (Rất tốt)</option>
-                            <option value="4">4 Sao (Tốt)</option>
-                            <option value="3">3 Sao (Bình thường)</option>
-                            <option value="2">2 Sao (Kém)</option>
-                            <option value="1">1 Sao (Rất kém)</option>
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label small">Bình luận:</label>
-                        <textarea id="revComment" class="form-control form-control-sm" rows="3" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary">Gửi đánh giá</button>
-                </form>
+<h5 class="section-title d-flex align-items-center gap-2">
+    Đánh giá sản phẩm 
+    <c:if test="${not empty avgRating}">
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm fs-6">
+            <i class="bi bi-star-fill me-1"></i> <fmt:formatNumber value="${avgRating}" maxFractionDigits="1"/> / 5
+        </span>
+    </c:if>
+</h5>
+<div class="card border-0 shadow-sm mb-5 rounded-4 overflow-hidden">
+    <div class="card-body p-4">
+        <div class="row g-4">
+            <!-- Cột form đánh giá -->
+            <div class="col-md-5">
+                <div class="bg-light p-4 rounded-4 h-100 border border-light shadow-sm">
+                    <h6 class="fw-bold mb-4 text-primary d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        Gửi đánh giá của bạn
+                    </h6>
+                    <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
+                        <input type="hidden" id="revProductId" value="${product.id}">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary">Số điện thoại (đã dùng mua hàng)</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-telephone"></i></span>
+                                <input type="text" id="revPhone" class="form-control border-start-0 ps-0" placeholder="09xxxxxxxx" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary">Mức độ hài lòng</label>
+                            <select id="revRating" class="form-select shadow-sm">
+                                <option value="5">⭐⭐⭐⭐⭐ (Tuyệt vời)</option>
+                                <option value="4">⭐⭐⭐⭐ (Tốt)</option>
+                                <option value="3">⭐⭐⭐ (Bình thường)</option>
+                                <option value="2">⭐⭐ (Kém)</option>
+                                <option value="1">⭐ (Rất tệ)</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-secondary">Bình luận của bạn</label>
+                            <textarea id="revComment" class="form-control shadow-sm" rows="3" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill shadow-sm fw-bold transition-all">
+                            <i class="bi bi-send me-2"></i> Gửi đánh giá
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h6 class="fw-bold mb-3">Các đánh giá gần đây</h6>
-                <div class="review-list" style="max-height: 300px; overflow-y: auto;">
+            
+            <!-- Cột danh sách đánh giá -->
+            <div class="col-md-7 ps-md-4">
+                <h6 class="fw-bold mb-4 d-flex align-items-center text-dark">
+                    <i class="bi bi-chat-right-text text-primary me-2 fs-5"></i> 
+                    Khách hàng đánh giá
+                </h6>
+                <div class="review-list pe-2" style="max-height: 450px; overflow-y: auto;">
                     <c:choose>
                         <c:when test="${empty reviews}">
-                            <p class="text-muted small">Chưa có đánh giá nào.</p>
+                            <div class="text-center py-5">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-journal-x fs-1 text-muted"></i>
+                                </div>
+                                <p class="text-muted fw-medium mb-0">Chưa có đánh giá nào.</p>
+                                <p class="text-muted small">Hãy là người đầu tiên nhận xét về sản phẩm này!</p>
+                            </div>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="rev" items="${reviews}">
-                                <div class="border-bottom mb-2 pb-2">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <strong>Khách hàng: ${rev.phone.replaceAll(".{3}$", "***")}</strong>
-                                        <span class="text-warning small">
-                                            <c:forEach begin="1" end="${rev.rating}">★</c:forEach>
-                                        </span>
+                                <div class="review-item mb-4 pb-3 border-bottom border-light">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <!-- Avatar -->
+                                        <div class="bg-primary bg-gradient bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+                                            <i class="bi bi-person-fill fs-4"></i>
+                                        </div>
+                                        <!-- Content -->
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <strong class="text-dark fs-6">Khách hàng: ${rev.phone.replaceAll(".{3}$", "***")}</strong>
+                                                <div class="text-warning small fs-6">
+                                                    <c:forEach begin="1" end="${rev.rating}"><i class="bi bi-star-fill"></i></c:forEach>
+                                                    <c:forEach begin="1" end="${5 - rev.rating}"><i class="bi bi-star text-muted opacity-25"></i></c:forEach>
+                                                </div>
+                                            </div>
+                                            <div class="text-muted mb-2 d-flex align-items-center" style="font-size: 0.8rem;">
+                                                <i class="bi bi-clock me-1"></i> <fmt:formatDate value="${rev.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                            </div>
+                                            <div class="bg-light p-3 rounded-4 text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+                                                <c:out value="${rev.comment}"/>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="small text-muted mb-1"><fmt:formatDate value="${rev.createdAt}" pattern="dd/MM/yyyy HH:mm"/></div>
-                                    <p class="mb-0 small"><c:out value="${rev.comment}"/></p>
                                 </div>
                             </c:forEach>
                         </c:otherwise>
@@ -256,6 +301,14 @@
             var qty = document.getElementById('qty');
             qty.max = btn.dataset.stock;
             if (Number(qty.value) > Number(btn.dataset.stock)) qty.value = btn.dataset.stock;
+            
+            if (Number(btn.dataset.stock) > 0) {
+                document.getElementById('btnAddToCart').disabled = false;
+                document.getElementById('btnBuyNow').disabled = false;
+            } else {
+                document.getElementById('btnAddToCart').disabled = true;
+                document.getElementById('btnBuyNow').disabled = true;
+            }
         });
     });
 

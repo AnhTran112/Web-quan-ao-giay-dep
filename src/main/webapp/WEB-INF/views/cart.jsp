@@ -35,9 +35,23 @@
                 </td>
                 <td>
                     <h6 class="mb-1">${item.name}</h6>
-                    <c:if test="${not empty item.variantName}">
-                        <small class="text-muted">Phân loại: ${item.variantName}</small>
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${not empty item.productVariants}">
+                            <form action="${pageContext.request.contextPath}/cart" method="post" class="mt-1">
+                                <input type="hidden" name="action" value="updateSize">
+                                <input type="hidden" name="productId" value="${item.productId}">
+                                <input type="hidden" name="oldVariantId" value="${item.variantId}">
+                                <select name="newVariantId" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                                    <c:forEach var="v" items="${item.productVariants}">
+                                        <option value="${v.id}" ${v.id == item.variantId ? 'selected' : ''}>${v.name}</option>
+                                    </c:forEach>
+                                </select>
+                            </form>
+                        </c:when>
+                        <c:when test="${not empty item.variantName}">
+                            <small class="text-muted">Phân loại: ${item.variantName}</small>
+                        </c:when>
+                    </c:choose>
                 </td>
                 <td><fmt:formatNumber value="${item.price}" type="number" maxFractionDigits="0"/> đ</td>
                 <td>
@@ -46,8 +60,7 @@
                         <input type="hidden" name="productId" value="${item.productId}">
                         <input type="hidden" name="variantId" value="${empty item.variantId ? 0 : item.variantId}">
                         <input type="number" name="quantity" class="form-control form-control-sm me-2" 
-                               value="${item.quantity}" min="1" style="width: 70px;">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Cập nhật</button>
+                               value="${item.quantity}" min="1" style="width: 70px;" onchange="this.form.submit()">
                     </form>
                 </td>
                 <td><fmt:formatNumber value="${item.subtotal}" type="number" maxFractionDigits="0"/> đ</td>

@@ -173,6 +173,19 @@ CREATE TABLE product_images (
     INDEX idx_images_product (product_id)
 );
 
+-- ----------------------------
+-- Bảng: wishlists (sản phẩm yêu thích)
+-- ----------------------------
+CREATE TABLE wishlists (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    user_id    INT NOT NULL,
+    product_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE KEY idx_wishlist_user_product (user_id, product_id)
+);
+
 -- =====================================================
 -- DỮ LIỆU MẪU
 -- =====================================================
