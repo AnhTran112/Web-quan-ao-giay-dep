@@ -18,13 +18,14 @@ public class WishlistServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            resp.sendRedirect(req.getContextPath() + "/login?error=Lỗi: Vui lòng đăng nhập để xem danh sách yêu thích");
+            resp.sendRedirect(req.getContextPath() + "/login?error="
+                    + java.net.URLEncoder.encode("Lỗi: Vui lòng đăng nhập để xem danh sách yêu thích", "UTF-8"));
             return;
         }
 
         User user = (User) session.getAttribute("loggedInUser");
         List<Product> wishlist = wishlistDAO.getByUserId(user.getId());
-        
+
         req.setAttribute("wishlist", wishlist);
         req.getRequestDispatcher("/WEB-INF/views/wishlist.jsp").forward(req, resp);
     }

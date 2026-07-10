@@ -200,7 +200,7 @@ INSERT INTO categories (name, description) VALUES
 ('Quần jean',        'Quần jean các loại: slimfit, baggy, rách gối'),
 ('Quần kaki & Short','Quần kaki, quần short, quần jogger');
 
--- 30 sản phẩm (ảnh dùng lại 6 file có sẵn trong assets/images)
+-- 30 sản phẩm
 INSERT INTO products (category_id, name, description, price, image, quantity, discount_percent) VALUES
 (1, 'Giày Sneaker Trắng',        'Giày sneaker màu trắng năng động.',           450000,  'giay sneake trang.jpg', 50, 25),
 (1, 'Giày Chạy Bộ Runner',       'Giày chạy bộ êm chân, đế cao su chống trượt.',650000,  'giay runner.jpg',       30, 0),
