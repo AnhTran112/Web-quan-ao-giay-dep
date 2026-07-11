@@ -1,114 +1,129 @@
-# Web Bán Giày Dép / Quần Áo — Đồ án Lập trình Web
+# Website Bán Quần Áo – Giày Dép (E-Commerce)
 
-Website thương mại điện tử đơn giản (Java JSP/Servlet + MySQL + Bootstrap), theo mô hình **MVC**.
+> Đồ án cuối kỳ môn **Lập trình Web** — Website Java **JSP / Servlet / JDBC** theo mô hình **MVC**.
+> Ứng dụng thương mại điện tử bán quần áo & giày dép: có đầy đủ Frontend, Backend, Database và CRUD.
 
-## 🛠 Công nghệ
+---
+
+## 1. Thông tin nhóm
+
+| STT | Họ và tên | MSSV | Vai trò |
+|-----|-----------|------|---------|
+| 1 | **Trần Tuấn Anh** | 2305CT0418 | **Nhóm trưởng** · Trải nghiệm khách hàng, Giỏ hàng, Đánh giá |
+| 2 | **Hồ Huy Hoàng** | 2305CT0393 | Nền tảng dự án (MVC), Quản lý sản phẩm (Admin) |
+| 3 | **Nguyễn Hoàng Anh Khoa** | 2305CT0458 | Vòng đời đơn hàng (Đặt hàng & xử lý) |
+| 4 | **Trần Trung Nguyên** | 2305CT0351 | Bảo mật/Đăng nhập, Danh mục, Thống kê |
+
+> Nhóm trưởng: **Trần Tuấn Anh**.
+
+## 2. Mô tả đề tài
+
+Website bán quần áo – giày dép trực tuyến gồm **2 phân hệ**:
+
+- **Trang khách hàng:** xem – lọc – tìm kiếm – sắp xếp sản phẩm; xem chi tiết kèm thư viện ảnh và phân
+  loại (size/màu); giỏ hàng; đặt hàng; đăng ký/đăng nhập tài khoản, xem lịch sử đơn, yêu thích, đánh giá.
+- **Trang quản trị (`/admin`):** quản lý sản phẩm – danh mục – đơn hàng – mã giảm giá – người dùng;
+  thống kê doanh thu bằng biểu đồ; xuất báo cáo Excel; ghi nhật ký thao tác (audit log).
+
+Mô hình bán hàng: **đặt hàng không thanh toán online** — khách gửi đơn kèm SĐT, admin gọi điện xác
+nhận và giao hàng (COD/liên hệ).
+
+## 3. Công nghệ sử dụng
+
 | Thành phần | Công nghệ |
 |------------|-----------|
-| Backend | Java Servlet + JSP, JSTL |
-| Frontend | HTML, Bootstrap 5 (CDN) |
-| Database | MySQL 8 |
-| Server | Apache Tomcat 9 (Maven tự tải, không cần cài) |
-| Build | Maven |
+| Ngôn ngữ / Web layer | Java 11, **Java Servlet** 4.0.1 (Controller) |
+| View | **JSP** + JSTL 1.2 |
+| Truy xuất dữ liệu | **JDBC** (MySQL Connector/J 8.0.33), PreparedStatement |
+| Database | **MySQL 8** (utf8mb4) |
+| Frontend | HTML, CSS, JavaScript, **Bootstrap 5** (CDN) |
+| Biểu đồ / Excel | Chart.js (CDN), Apache POI 5.2.3 (xuất `.xlsx`) |
+| Bảo mật mật khẩu | jBCrypt 0.4 (BCrypt) |
+| Server | **Apache Tomcat 9** (Maven tự tải qua Cargo — không cần cài) |
+| Build | Apache Maven (đóng gói WAR) |
+| Kiến trúc | **MVC** (Model – DAO – Controller/Servlet – View/JSP) |
 
-## 📁 Cấu trúc thư mục
-Xem chi tiết trong [`docs/03_cau_truc_du_an.md`](docs/03_cau_truc_du_an.md).
-```
-docs/           → tài liệu đồ án (mô tả, ERD, cấu trúc, hướng dẫn chạy, database.sql)
-src/main/java   → code Java (model, dao, controller, util, filter)
-src/main/webapp → JSP + Bootstrap + assets (css/js/images)
-pom.xml         → khai báo thư viện + plugin chạy Tomcat
-```
+## 4. Các chức năng chính
 
----
+1. **Quản lý sản phẩm** — CRUD đầy đủ (thêm/xem/sửa/xóa), upload ảnh, phân loại size/màu, giảm giá %, tìm kiếm theo tên.
+2. **Quản lý danh mục** — CRUD danh mục sản phẩm.
+3. **Giỏ hàng & Đặt hàng** — giỏ hàng lưu Cookie, thêm giỏ bằng AJAX, áp mã giảm giá, phí ship, đặt hàng trong transaction (trừ tồn kho an toàn).
+4. **Tìm kiếm & Lọc sản phẩm** — lọc theo danh mục/khoảng giá, sắp xếp, tìm kiếm gợi ý (autocomplete), phân trang.
+5. **Tài khoản & Phân quyền** — đăng ký/đăng nhập, ghi nhớ đăng nhập, 3 vai trò **ADMIN / STAFF / CUSTOMER**, mã hóa mật khẩu BCrypt, khóa tài khoản khi sai nhiều lần.
+6. **Thống kê & Báo cáo** — dashboard doanh thu (Chart.js), top bán chạy, cảnh báo sắp hết hàng, xuất Excel; nhật ký hoạt động admin.
 
-# 🚀 HƯỚNG DẪN CHẠY DỰ ÁN (chi tiết)
+*(Ngoài ra: đánh giá sản phẩm cho khách đã mua, danh sách yêu thích, xem nhanh (quick-view), lịch sử trạng thái đơn hàng.)*
 
-> Tóm tắt nhanh 3 lệnh:
-> ```
-> mysql -u root -p < docs/database.sql      # 1. tạo database
-> # 2. sửa user/password trong DBConnection.java
-> mvn clean package cargo:run               # 3. chạy web
-> ```
-> Rồi mở http://localhost:8080/shop/home
+## 5. Hướng dẫn cài đặt & chạy
 
-## Bước 0 — Kiểm tra máy đã có công cụ
-Mở terminal (CMD / PowerShell / Terminal) gõ lần lượt:
-```
-java -version      # cần JDK 11 trở lên
-mvn -version       # cần Maven (3.6+)
-```
-- Nếu **chưa có JDK**: tải Temurin tại https://adoptium.net (hoặc bật OpenJDK trong ServBay).
-- Nếu **chưa có Maven**: tải tại https://maven.apache.org/download.cgi, giải nén, thêm thư mục `bin` vào biến môi trường `PATH`.
-- **MySQL**: dùng MySQL đã cài, hoặc bật MySQL trong **ServBay** (rất tiện).
+**Yêu cầu:** JDK 11+, Maven 3.6+, MySQL 8 đang chạy. *Không cần cài Tomcat* — plugin Cargo tự tải Tomcat 9.
 
-> Không cần cài Tomcat — Maven sẽ tự tải Tomcat 9 ở Bước 3.
+```bash
+# 1. Clone project
+git clone https://github.com/AnhTran112/Web-quan-ao-giay-dep
+cd Web-quan-ao-giay-dep
 
-## Bước 1 — Tạo cơ sở dữ liệu
-Chọn 1 trong 2 cách:
+# 2. Tạo database (chạy script tạo bảng + dữ liệu mẫu)
+mysql -u root -p < database/database.sql
 
-**Cách A — bằng dòng lệnh:**
-```
-mysql -u root -p < docs/database.sql
-```
-**Cách B — bằng giao diện:** mở **phpMyAdmin** (có sẵn trong ServBay) hoặc **MySQL Workbench**,
-copy toàn bộ nội dung `docs/database.sql` dán vào và bấm chạy.
+# 3. Cấu hình kết nối: mở web/src/main/java/com/shop/util/DBConnection.java
+#    sửa USER / PASSWORD cho khớp MySQL của bạn
 
-Sau bước này sẽ có database `shop_db` cùng dữ liệu mẫu (4 danh mục, 6 sản phẩm, 1 admin).
-
-## Bước 2 — Cấu hình kết nối database
-Mở file `src/main/java/com/shop/util/DBConnection.java`, sửa cho khớp MySQL của bạn:
-```java
-private static final String USER = "root";     // tên đăng nhập MySQL
-private static final String PASSWORD = "";      // mật khẩu MySQL của bạn
-```
-> ServBay mặc định user là `root`. Nếu MySQL của bạn có mật khẩu thì điền vào `PASSWORD`.
-
-## Bước 3 — Chạy web (Maven tự tải Tomcat)
-Mở terminal **ngay trong thư mục dự án** (chỗ có file `pom.xml`), gõ:
-```
+# 4. Chạy web — toàn bộ mã nguồn nằm trong thư mục web/
+cd web
 mvn clean package cargo:run
 ```
-- **Lần đầu** sẽ lâu (vài phút) vì Maven tải Tomcat 9 + thư viện về máy. Các lần sau rất nhanh.
-- Khi thấy dòng báo `Tomcat ... started` (server đã khởi động) là xong.
-- Muốn **dừng server**: nhấn `Ctrl + C` trong terminal.
 
-## Bước 4 — Truy cập trang web
+Sau đó mở trình duyệt:
+
 | Trang | Địa chỉ | Tài khoản |
 |-------|---------|-----------|
-| Khách hàng | http://localhost:8080/shop/home | (không cần) |
-| Quản trị | http://localhost:8080/shop/admin/login | **admin / 123456** |
+| Khách hàng | http://localhost:8081/shop/home | (không cần) |
+| Quản trị | http://localhost:8081/shop/admin/login | xem mục 6 |
 
-## 🧯 Lỗi thường gặp
-| Lỗi | Nguyên nhân & cách xử lý |
-|-----|--------------------------|
-| `port 8080 already in use` | Cổng 8080 đang bị chiếm. Mở `pom.xml`, đổi `cargo.servlet.port` từ `8080` sang `8081`, chạy lại. |
-| `Unknown database 'shop_db'` | Chưa chạy `database.sql` ở Bước 1. |
-| `Communications link failure` | MySQL chưa bật, hoặc sai user/password trong `DBConnection.java`. |
-| `Public Key Retrieval is not allowed` | Thêm `&allowPublicKeyRetrieval=true` vào cuối chuỗi URL trong `DBConnection.java`. |
-| Tải Tomcat bị lỗi mạng | Chạy lại `mvn ... cargo:run`, Maven sẽ tải tiếp phần còn thiếu. |
+> **Dừng server:** `Ctrl + C`. Nếu cổng 8081 bận, đổi `cargo.servlet.port` trong `pom.xml`.
 
-> Hướng dẫn đầy đủ hơn: [`docs/04_huong_dan_chay.md`](docs/04_huong_dan_chay.md)
+**Một số lỗi thường gặp:**
 
----
+| Lỗi | Cách xử lý |
+|-----|-----------|
+| `port 8081 already in use` | Đổi `cargo.servlet.port` trong `pom.xml` sang cổng khác |
+| `Unknown database 'shop_db'` | Chưa chạy `database/database.sql` (bước 2) |
+| `Communications link failure` | MySQL chưa bật hoặc sai user/password trong `DBConnection.java` |
+| `Public Key Retrieval is not allowed` | Đã xử lý sẵn bằng `&allowPublicKeyRetrieval=true` trong chuỗi kết nối |
 
-## ✅ Tính năng đã hoàn thiện
+## 6. Tài khoản demo
 
-**Phía khách hàng:**
-- Xem danh sách sản phẩm, lọc theo danh mục và khoảng giá
-- Xem chi tiết sản phẩm
-- Giỏ hàng (Session): thêm, cập nhật số lượng, xóa
-- Đặt hàng (checkout): điền thông tin → lưu đơn vào DB → xóa giỏ
+| Vai trò | Tài khoản | Mật khẩu | Quyền |
+|---------|-----------|----------|-------|
+| **Admin** | `admin` | `123456` | Toàn quyền quản trị |
+| **Nhân viên (STAFF)** | `nhanvien` | `123456` | Chỉ xử lý đơn hàng, xem dashboard |
+| **Khách hàng** | `khach1` … `khach5` | `123456` | Mua hàng, xem lịch sử đơn, đánh giá |
 
-**Phía quản trị (`/admin`):**
-- Đăng nhập bảo mật (Filter chặn toàn bộ `/admin/*`)
-- Quản lý sản phẩm: thêm/sửa/xóa, **upload ảnh**, **tìm kiếm theo tên**, validate phía server
-- Quản lý danh mục: thêm/sửa/xóa
-- Quản lý đơn hàng: xem danh sách, đổi trạng thái PENDING → DELIVERED
-- Thống kê doanh thu + số đơn
+## 7. Video thuyết trình & demo
 
-## 📚 Tài liệu
-- [`docs/01_mo_ta_de_tai.md`](docs/01_mo_ta_de_tai.md) — Mô tả đề tài, chức năng, công nghệ
-- [`docs/02_database_erd.md`](docs/02_database_erd.md) — Sơ đồ ERD + mô tả các bảng
-- [`docs/03_cau_truc_du_an.md`](docs/03_cau_truc_du_an.md) — Cấu trúc thư mục, mô hình MVC
-- [`docs/04_huong_dan_chay.md`](docs/04_huong_dan_chay.md) — Hướng dẫn chạy chi tiết
+> Video thuyết trình & demo: <https://github.com/AnhTran112/Web-quan-ao-giay-dep/tree/main/video>
+
+## 8. Cấu trúc thư mục
+
+```
+Web-quan-ao-giay-dep/
+├── web/                         # Toàn bộ ứng dụng Maven (chạy được)
+│   ├── pom.xml                  #   khai báo thư viện + plugin Cargo
+│   └── src/main/
+│       ├── java/com/shop/       #   Backend: controller (Servlet), dao, model, filter, util
+│       └── webapp/              #   Frontend: JSP, CSS, JS, ảnh, WEB-INF
+├── database/database.sql        # Script tạo database + dữ liệu mẫu
+├── report/                      # Báo cáo (.docx / .pdf)
+├── slides/                      # Slide thuyết trình
+├── video/                       # Video demo (hoặc link)
+└── README.md
+```
+
+## 9. Tài liệu đồ án
+
+- [`database/database.sql`](database/database.sql) — Script tạo database + dữ liệu mẫu
+- **Báo cáo đầy đủ:** [`report/Bao_Cao_Do_An_Web_Ban_Quan_Ao_Giay_Dep.docx`](report/) / `.pdf` — trình bày chi tiết
+  phân tích, thiết kế hệ thống, ERD, giao diện, cài đặt chức năng, phân công và kết quả.
+</content>
+</invoke>

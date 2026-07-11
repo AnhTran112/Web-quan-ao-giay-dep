@@ -16,3 +16,6 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+# File tam cua Microsoft Office (Word/Excel mo file)
+~$*
+*.tmp
