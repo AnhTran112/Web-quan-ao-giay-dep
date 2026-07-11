@@ -7,7 +7,7 @@
     <h3>Thống kê</h3>
     <!-- Nút xuất CSV -->
     <a href="${pageContext.request.contextPath}/admin/dashboard?action=export&fromDate=${fromDate}&toDate=${toDate}" class="btn btn-success">
-        Xuất báo cáo (CSV)
+        Xuất báo cáo (Excel)
     </a>
 </div>
 

@@ -17,10 +17,14 @@
         <span class="navbar-brand fw-bold">Admin Panel</span>
         <div class="admin-nav d-flex gap-1 flex-wrap align-items-center">
             <a data-nav="dashboard"  href="${pageContext.request.contextPath}/admin/dashboard">Thống kê</a>
-            <a data-nav="products"   href="${pageContext.request.contextPath}/admin/products">Sản phẩm</a>
-            <a data-nav="categories" href="${pageContext.request.contextPath}/admin/categories">Danh mục</a>
+            <c:if test="${loggedInUser.role == 'ADMIN' || admin.role == 'ADMIN'}">
+                <a data-nav="products"   href="${pageContext.request.contextPath}/admin/products">Sản phẩm</a>
+                <a data-nav="categories" href="${pageContext.request.contextPath}/admin/categories">Danh mục</a>
+            </c:if>
             <a data-nav="orders"     href="${pageContext.request.contextPath}/admin/orders">Đơn hàng</a>
-            <a data-nav="coupons"    href="${pageContext.request.contextPath}/admin/coupons">Mã giảm giá</a>
+            <c:if test="${loggedInUser.role == 'ADMIN' || admin.role == 'ADMIN'}">
+                <a data-nav="coupons"    href="${pageContext.request.contextPath}/admin/coupons">Mã giảm giá</a>
+            </c:if>
             <c:if test="${loggedInUser.role == 'ADMIN' || admin.role == 'ADMIN'}">
                 <a data-nav="users" href="${pageContext.request.contextPath}/admin/users">Tài khoản</a>
                 <a data-nav="logs"  href="${pageContext.request.contextPath}/admin/logs">Nhật ký (Audit)</a>
