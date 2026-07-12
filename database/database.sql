@@ -348,3 +348,37 @@ INSERT INTO order_status_history (order_id, old_status, new_status, changed_by, 
 (20, NULL,        'PENDING',   'customer', DATE_SUB(NOW(), INTERVAL 1 DAY)),
 (21, NULL,        'PENDING',   'customer', DATE_SUB(NOW(), INTERVAL 4 DAY)),
 (21, 'PENDING',   'CANCELLED', 'admin',    DATE_SUB(NOW(), INTERVAL 3 DAY));
+
+-- ----------------------------
+-- Đánh giá sản phẩm (reviews) — chỉ từ khách đã mua thật (khớp phone trong orders)
+-- ----------------------------
+INSERT INTO reviews (product_id, phone, rating, comment, created_at) VALUES
+(1,  '0907654321', 5, 'Giày trắng đẹp, form chuẩn đi vừa vặn. Chất da mềm, đi cả ngày không đau chân. Sẽ ủng hộ shop tiếp!',          DATE_SUB(NOW(), INTERVAL 155 DAY)),
+(2,  '0987654321', 5, 'Đi chạy bộ rất êm, nhẹ chân, thoáng khí. Đúng chất giày chạy bộ xịn, đáng tiền.',                            DATE_SUB(NOW(), INTERVAL 128 DAY)),
+(4,  '0977666555', 4, 'Giày bóng rổ ôm chân, bám sân tốt. Chỉ hơi nặng một chút nhưng nhìn chung ổn áp trong tầm giá.',            DATE_SUB(NOW(), INTERVAL 82 DAY)),
+(5,  '0966777888', 4, 'Giày tennis chắc chắn, đế bám tốt. Giao hàng nhanh, đóng gói cẩn thận. Ưng ý!',                            DATE_SUB(NOW(), INTERVAL 35 DAY)),
+(7,  '0909888777', 5, 'Giày tây Oxford lên chân sang trọng, da bóng đẹp. Đi đám cưới, đi làm đều hợp. Rất hài lòng.',              DATE_SUB(NOW(), INTERVAL 108 DAY)),
+(8,  '0911222333', 5, 'Giày Derby màu nâu rất đẹp, da thật, đường may tỉ mỉ. Size chuẩn, đóng hộp chắc chắn.',                   DATE_SUB(NOW(), INTERVAL 16 DAY)),
+(9,  '0944555666', 4, 'Giày lười da mềm, xỏ vào đi ngay, thoải mái. Màu hơi khác ảnh chút xíu nhưng vẫn đẹp.',                    DATE_SUB(NOW(), INTERVAL 60 DAY)),
+(10, '0912345678', 5, 'Boot Chelsea chất da xịn, form gọn gàng nam tính. Mang mùa lạnh cực hợp, đáng đồng tiền.',                DATE_SUB(NOW(), INTERVAL 148 DAY)),
+(11, '0966555444', 4, 'Sandal quai ngang chắc chắn, đi êm chân. Quai điều chỉnh được, khá tiện lợi.',                            DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(13, '0966555444', 3, 'Dép nhẹ, đi trong nhà ổn. Nhưng đế hơi trơn khi gặp nước, cần cẩn thận.',                                  DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(14, '0901234567', 5, 'Áo thun cotton mát, thấm hút mồ hôi tốt. Mặc thoải mái, giặt không xù lông. Sẽ mua thêm màu khác.',       DATE_SUB(NOW(), INTERVAL 158 DAY)),
+(14, '0933444555', 4, 'Chất vải mềm, form vừa người. Đóng gói đẹp, giao đúng hẹn. Giá hợp lý.',                                   DATE_SUB(NOW(), INTERVAL 72 DAY)),
+(14, '0955444333', 5, 'Áo basic dễ phối đồ, mặc đi đâu cũng được. Vải dày dặn hơn mình nghĩ, rất ưng.',                          DATE_SUB(NOW(), INTERVAL 7 DAY)),
+(15, '0918777666', 4, 'Áo oversize form chuẩn streetwear, mặc lên trẻ trung. Vải hơi mỏng nhưng mát, ổn cho mùa hè.',           DATE_SUB(NOW(), INTERVAL 95 DAY)),
+(16, '0955666777', 5, 'Áo thể thao coolmax thoáng, tập gym mặc rất mát. Co giãn tốt, không bí. 10 điểm!',                          DATE_SUB(NOW(), INTERVAL 47 DAY)),
+(17, '0922333444', 4, 'Hình in graphic sắc nét, không bong tróc sau vài lần giặt. Áo đẹp, đúng mô tả.',                          DATE_SUB(NOW(), INTERVAL 24 DAY)),
+(18, '0938111222', 5, 'Áo polo lịch sự, cổ áo đứng form. Mặc đi làm đi chơi đều đẹp. Chất cá sấu mát tay.',                       DATE_SUB(NOW(), INTERVAL 137 DAY)),
+(19, '0977888999', 4, 'Polo thể thao co giãn tốt, thấm hút ổn. Màu lên chuẩn như hình. Đáng mua.',                               DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(20, '0965432187', 5, 'Sơ mi trắng công sở form đẹp, vải ít nhăn. Đi làm rất chuyên nghiệp. Rất hài lòng với chất lượng.',      DATE_SUB(NOW(), INTERVAL 118 DAY)),
+(21, '0909888777', 4, 'Sơ mi flannel caro ấm áp, hợp mùa thu đông. Chất vải dày mềm, đường may chắc chắn.',                     DATE_SUB(NOW(), INTERVAL 105 DAY)),
+(22, '0901234567', 5, 'Áo khoác gió nhẹ, cản gió tốt, chống nước nhẹ. Gấp gọn bỏ balo tiện lợi. Quá ổn!',                        DATE_SUB(NOW(), INTERVAL 8 DAY)),
+(23, '0933444555', 4, 'Khoác jean denim chất dày, phong cách bụi bặm. Form chuẩn, mặc đẹp. Giao hàng nhanh.',                    DATE_SUB(NOW(), INTERVAL 70 DAY)),
+(24, '0901234567', 5, 'Hoodie nỉ dày dặn, bên trong lót lông cực ấm. Mặc mùa lạnh siêu thích. Đáng tiền!',                       DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(25, '0907654321', 4, 'Quần jean slimfit ôm dáng đẹp, co giãn nhẹ dễ vận động. Màu chuẩn, đường chỉ đẹp.',                       DATE_SUB(NOW(), INTERVAL 152 DAY)),
+(26, '0922333444', 5, 'Jean baggy rộng rãi thoải mái, chất vải mềm. Đúng trend, mặc lên cá tính. Rất ưng ý.',                    DATE_SUB(NOW(), INTERVAL 23 DAY)),
+(27, '0955444333', 3, 'Quần jean rách gối kiểu đẹp nhưng vết rách hơi to hơn ảnh. Chất quần thì ổn trong tầm giá.',             DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(29, '0987654321', 5, 'Short kaki mát, form gọn, đi biển đi chơi đều hợp. Nhiều túi tiện lợi. Rất hài lòng.',                    DATE_SUB(NOW(), INTERVAL 130 DAY)),
+(29, '0977888999', 4, 'Quần short chất đẹp, may chắc chắn. Size vừa vặn đúng bảng size của shop. Sẽ ủng hộ tiếp.',              DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(30, '0955666777', 5, 'Jogger thể thao co giãn cực tốt, bo gấu ôm chân đẹp. Mặc tập lẫn mặc nhà đều thích. 5 sao!',            DATE_SUB(NOW(), INTERVAL 48 DAY));
