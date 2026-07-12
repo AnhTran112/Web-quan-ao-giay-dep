@@ -23,9 +23,9 @@ import java.util.List;
  */
 @WebServlet("/admin/products")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,      // 1 MB: duoi nguong nay giu trong RAM, tren moi ghi ra disk tam
-    maxFileSize       = 5 * 1024 * 1024,  // 5 MB: gioi han moi file anh
-    maxRequestSize    = 10 * 1024 * 1024  // 10 MB: gioi han toan bo request (anh + cac truong khac)
+    fileSizeThreshold = 1024 * 1024,       // 1 MB: duoi nguong nay giu trong RAM, tren moi ghi ra disk tam
+    maxFileSize       = 15 * 1024 * 1024,  // 15 MB: gioi han moi file anh (anh chup dien thoai thuong 3-10MB)
+    maxRequestSize    = 20 * 1024 * 1024   // 20 MB: gioi han toan bo request (anh + cac truong khac)
 )
 public class AdminProductServlet extends HttpServlet {
 
@@ -154,7 +154,12 @@ public class AdminProductServlet extends HttpServlet {
         int quantity = 0;
         int categoryId = 0;
 
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null) {
+            // getParameter tra ve null (khong phai chuoi rong) khi Tomcat KHONG parse duoc
+            // multipart body -> hau het do anh upload vuot qua maxFileSize/maxRequestSize.
+            // Neu bao "ten san pham trong" o day se gay hieu nham (ten van duoc nhap).
+            error = "Ảnh sản phẩm quá lớn (tối đa 15MB) hoặc dữ liệu gửi lên không hợp lệ. Vui lòng chọn ảnh nhỏ hơn rồi thử lại.";
+        } else if (name.trim().isEmpty()) {
             error = "Tên sản phẩm không được để trống.";
         } else {
             try {
